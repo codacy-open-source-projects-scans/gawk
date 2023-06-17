@@ -1,3 +1,33 @@
+2023-06-14         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in (Fields): Add a footnote that referencing an
+	uninitialized field issues a lint warning. Suggested by
+	Sebastian Carlos <sebaaa1754@gmail.com>.
+
+2023-06-12         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in (Statements/Lines): Document how backslash continuation
+	work for -F and command line assignments.
+
+2023-06-04         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in (String Functions): Improve doc on gensub()
+	for backslash before non-digit or at end of string.
+
+2023-06-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawk.1: Remove last use of \c and fix a typo reported by
+	Bjarni Ingi Gislasson.
+	* gawkbug.1: Fix up formatting of `--'. Also reported by
+	Bjarni Ingi Gislasson.
+	* gawktexi.in (Extension Sample Readdir): Added more info
+	to sync with the readdir.3am man page.
+
+2023-06-02         Bjarni Ingi Gislason  <bjarniig@simnet.is>
+
+	* gawk.1: Remove most uses of \c to help with po4a.
+	Original issue reported by Helge Kreutzmann <debian@helgefjell.de>.
+
 2023-05-28         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* gawktexi.in (Extension Sample Readdir): Updated.

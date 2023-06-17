@@ -200,6 +200,8 @@ EXTRA_DIST = \
 	clsflnam.awk \
 	clsflnam.in \
 	clsflnam.ok \
+	cmdlinefsbacknl.sh \
+	cmdlinefsbacknl.ok \
 	colonwarn.awk \
 	colonwarn.in \
 	colonwarn.ok \
@@ -500,6 +502,8 @@ EXTRA_DIST = \
 	gensub3.awk \
 	gensub3.in \
 	gensub3.ok \
+	gensub4.awk \
+	gensub4.ok \
 	getfile.awk \
 	getfile.ok \
 	getline.awk \
@@ -1478,6 +1482,7 @@ BASIC_TESTS = \
 	arysubnm aryunasgn asgext assignnumfield assignnumfield2 awkpath \
 	back89 backgsub badassign1 badbuild callparam childin clobber \
 	closebad close_status clsflnam compare compare2 concat1 concat2 \
+	cmdlinefsbacknl \
 	concat3 concat4 concat5 convfmt datanonl defref delargv delarpm2 \
 	delarprm delfunc dfacheck2 dfamb1 dfastress divzero divzero2 \
 	dynlj eofsplit \
@@ -1527,7 +1532,7 @@ GAWK_EXT_TESTS = \
 	elemnew1 elemnew2 elemnew3 errno exit fieldwdth forcenum fpat1 fpat2 \
 	fpat3 fpat4 fpat5 fpat6 fpat7 fpat8 fpat9 fpatnull fsfwfs functab1 \
 	functab2 functab3 functab6 funlen fwtest fwtest2 fwtest3 fwtest4 \
-	fwtest5 fwtest6 fwtest7 fwtest8 genpot gensub gensub2 gensub3 \
+	fwtest5 fwtest6 fwtest7 fwtest8 genpot gensub gensub2 gensub3 gensub4 \
 	getlndir gnuops2 gnuops3 gnureops gsubind icasefs icasers id \
 	igncdym igncfs ignrcas2 ignrcas4 ignrcase incdupe incdupe2 \
 	incdupe3 incdupe4 incdupe5 incdupe6 incdupe7 include include2 \

@@ -3681,6 +3681,35 @@ next line. However, the backslash-newline combination is never even
 noticed because it is ``hidden'' inside the comment. Thus, the
 @code{BEGIN} is noted as a syntax error.
 
+@cindex dark corner @subentry backslash continuation on command line
+@cindex dark corner @subentry command line, backslash continuation on
+Backslash continuation comes into play in an additional, unexpected situation.
+Consider:
+
+@example
+gawk -F'\
+a' '@dots{}'
+@end example
+
+@noindent
+This command line assigns a value to @code{FS}. But what value?
+There are several possibilities, and in fact different versions of
+@command{awk} do different things.  @command{gawk} treats this as
+if it were written:
+
+@example
+BEGIN @{ FS = "\
+a"
+@}
+@dots{}
+@end example
+
+@noindent
+In short, the backslash and newline are removed, assigning @code{"a"}
+to @code{FS}.  This same treatment applies to variable assignments
+made with the @option{-v} option (@pxref{Options})
+and to regular command-line variable assignments (@pxref{Assignment Options}).
+
 If you're interested, see
 @uref{https://lists.gnu.org/archive/html/bug-gawk/2022-10/msg00025.html}
 for a source code patch that allows lines to be continued when inside
@@ -7535,7 +7564,9 @@ there are, the last field in a record can be represented by @code{$NF}.
 So, @code{$NF} is the same as @code{$7}, which is @samp{example.}.
 If you try to reference a field beyond the last
 one (such as @code{$8} when the record has only seven fields), you get
-the empty string.  (If used in a numeric operation, you get zero.)
+the empty string.  If used in a numeric operation, you get zero.@footnote{In
+either case, with the @option{--lint} option, @command{gawk} warns that you
+are referencing an uninitialized field.}
 
 The use of @code{$0}, which looks like a reference to the ``zeroth'' field, is
 a special case: it represents the whole input record. Use it
@@ -19181,6 +19212,11 @@ a warning message.
 If @var{regexp} does not match @var{target}, @code{gensub()}'s return value
 is the original unchanged value of @var{target}.  Note that, as mentioned
 above, the returned value is a string, even if @var{target} was not.
+
+In the replacement string, a backslash before a non-digit character
+is simply elided. For example, @samp{\q} becomes @samp{q} in the result.
+If the final character in the replacement string is a backslash,
+it is left alone.
 
 @item @code{gsub(@var{regexp}, @var{replacement}} [@code{, @var{target}}]@code{)}
 @cindexawkfunc{gsub}
@@ -40529,6 +40565,12 @@ On systems without the file type information, the extension falls back
 to calling the @code{stat()} system call
 in order to provide the information.
 Thus the third field should never be @samp{u} (for ``unknown'').
+
+Normally, when reading directories, you should set @code{FS}
+equal to @code{"/"}.  However, you may instead chose to create
+@code{PROCINFO["readdir_override"]} (with any value). If this element
+exists when the directory is opened, then the extension automatically
+sets the fields in each record for you.
 
 By default, if a directory cannot be opened (due to permission problems,
 for example), @command{gawk} will exit.  As with regular files, this

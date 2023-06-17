@@ -1,3 +1,18 @@
+2023-06-12         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* main.c (cmdline_fs): Add ELIDE_BACK_NL to flags in call
+	to make_str_node(). Fixes weirdness with -F. Thanks to
+	Denys Vlasenko <dvlasenk@redhat.com> for the report.
+
+2023-06-04         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* builtin.c (do_sub): Fix a Day 1 gensub bug, reported by
+	Denys Vlasenko <dvlasenk@redhat.com>.
+
+2023-06-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* NEWS: Updated.
+
 2023-05-07         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.2.2: Release tar ball made.
