@@ -1,3 +1,26 @@
+2023-09-13         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Fix handling of zero length matching in multibyte locales
+	with sub/gsub. Thanks again to Ed Morton for the report.
+
+	* builtin.c (do_sub): When the match is empty and we copy in
+	the subsequent character, check gawk_mb_cur_max to know whether
+	to copy one byte or multiple bytes.
+
+2023-09-11         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* field.c (do_split): Fix some whitespace.
+
+	Unrelated: Add do_csv variable to the API.
+
+	* gawkapi.h: Bump major version to 4, minor version back to zero.
+	(DO_FLAGS_SIZE): Increase to 7.
+	(gawk_do_csv, do_csv): New macros.
+	* gawkapi.c (init_ext_api): Init the do_csv element. Replace
+	numeric indices with symbolic ones.
+	* NEWS: Updated for do_csv in the API, and the major and
+	minor API versions.
+
 2023-09-01         Miguel Pineiro Jr     <mpj@pineiro.cc>
 
 	Fix the handling of zero-length matches in multibyte locales.

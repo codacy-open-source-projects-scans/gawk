@@ -7983,10 +7983,6 @@ The value of @code{FS} is ignored.
 Fields are separated by runs of whitespace.  Leading and trailing
 whitespace are ignored.  This is the default.
 
-@item FS == ","
-Fields are separated by commas, with quoting of fields
-and special rules involved.
-
 @item FS == @var{any other single character}
 Fields are separated by each occurrence of the character.  Multiple
 successive occurrences delimit empty fields, as do leading and
@@ -8232,8 +8228,10 @@ four, and @code{$4} has the value @code{"ddd"}.
 @node Splitting By Content
 @section Defining Fields by Content
 
-@strong{FIXME}: This whole section needs rewriting now
+@quotation NOTE
+This whole section needs rewriting now
 that @command{gawk} has built-in CSV parsing. Sigh.
+@end quotation
 
 @menu
 * More CSV::                    More on CSV files.
@@ -38073,6 +38071,9 @@ whether the corresponding command-line options were enabled when
 @command{gawk} was invoked.  The variables are:
 
 @table @code
+@item do_csv
+This variable is true if @command{gawk} was invoked with @option{--csv} option.
+
 @item do_debug
 This variable is true if @command{gawk} was invoked with @option{--debug} option.
 
@@ -41453,8 +41454,17 @@ Version 5.3 added the following features:
 
 @itemize
 @item
-Comma separated value (CSV) field splitting
+Comma separated value (CSV) field splitting and the @option{--csv}
+command-line option
 (@pxref{Comma Separated Fields}).
+
+@item
+@code{PROCINFO["CSV"]} exists if @command{gawk} was invoked
+with @option{--csv} (@pxref{Auto-set}).
+
+@item
+The @code{do_csv} API information variable
+(@pxref{Extension API Informational Variables}).
 
 @item
 The ability to make @command{gawk} buffer output to pipes
