@@ -1,3 +1,52 @@
+2023-10-24         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* config.h: Regenerated.
+
+2023-10-23         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
+2023-10-22         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawkmisc.pc: Update copyright year.
+
+2023-10-17         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst.prologue: Update copyright years. Duh.
+
+2023-10-17         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Update copyright years.
+
+2023-10-15         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* config.h: Regenerated.
+
+2023-10-13         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
+2023-10-12  Eli Zaretskii  <eliz@gnu.org>
+
+	* gawkmisc.pc (w32_wc_to_lc): New function.
+
+2023-10-08         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
+2023-10-07  Eli Zaretskii  <eliz@gnu.org>
+
+	* Makefile (ALL_EXTENSIONS, readdir_test.$(SOEXT)): Remove
+	readdir_test, to follow the upstream.
+
+2023-10-04         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* config.h: Updated.
+
+2023-10-03         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
 2023-09-13         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* Makefile.tst: Regenerated.

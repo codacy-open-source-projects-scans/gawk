@@ -1,3 +1,50 @@
+2023-10-24         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* badargs.ok: Updated after version bump.
+
+2023-10-23         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am: Sort and prettify the various collections
+	of tests in preparation for a release.
+
+2023-10-18         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXPECTED_FAIL_ZOS): Update with more tests.
+
+2023-10-15         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* badargs.ok: Updated after version bump.
+
+2023-10-12  Eli Zaretskii  <eliz@gnu.org>
+
+	* Makefile.am (EXPECTED_FAIL_MINGW): Add a few non-ASCII tests.
+
+2023-10-09         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* cmdlinefsbacknl2.sh: Add sed commands after all the od
+	commands to fix up whitespace so that the test passes
+	on MacOS.
+
+2023-10-08         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* cmdlinefsbacknl2.sh: Add -v BINMODE=2 to gawk invocation
+	for Windows. Thanks to Eli Zaretskii for the tip.
+	* cmdlinefsbacknl2.ok: Updated after fix to warning message.
+
+	Unrelated:
+
+	* Makefile.am (EXTRA_DIST): New test, lintplus3.
+	* lintplus3.awk, lintplus3.in, lintplus3.ok: New files.
+
+2023-10-04         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* badargs.ok: Update after code changes.
+
+2023-10-03         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRA_DIST): New test, lintplus2.
+	* lintplus2.awk, lintplus2.ok: New files.
+
 2023-09-13         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* Makefile.am (EXTRA_DIST): New test, gsubnulli18n.
@@ -652,7 +699,7 @@
 
 	* Gentests: Remove CHECK_MPFR handling. Instead, read the
 	EXTRA_DIST list of files and generate better checking tests
-	for tests that have an -mpfr.ok file. Use GAWK_TEST__ARGS
+	for tests that have an -mpfr.ok file. Use GAWK_TEST_ARGS
 	instead of AWKFLAGS.
 	* Makefile.am (CHECK_MPFR): Removed.
 	(arrdbg, testext): Checks updated.

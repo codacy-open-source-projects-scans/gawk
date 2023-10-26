@@ -1,3 +1,51 @@
+2023-10-22         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawk.texi (Arrays of Arrays): Remove note at the end about
+	passing uninitialized elements into builtin functions that
+	create arrays, as it now works. Thanks, yet again, to
+	Hermann Peifer for pointing this out.
+	* gawk.1: Update copyright year.
+	* gawkbug.1: Remove "Last modified" line.
+
+2023-10-21         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawk.texi: Remove notes at end of the file about sidebars.
+	Thanks to Antonio Columbo for pointing out that it's no
+	longer needed.
+	(Redirection): Revised discussion of mixing > and >>.
+	Motivated by mails from Hermann Peifer.
+	* wordlist3: Added some more OK words.
+
+2023-10-19         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawk.texi: Renamed from gawktexi.in. Sidebars converted to
+	@cartouche for Texinfo 7.1.
+	* sidebar.awk: Removed.
+	* texinfo.tex: Updated from Texinfo 7.1 distribution.
+	* Makefile.am: Converted gawktexi.in to gawk.texi.
+
+2023-10-19         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in: Update the date, add some indexing, removing FIXMEs.
+	* gawk.1, gawkbug.1, awkcard.in: Update version.
+
+2023-10-18         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* wordlist: Updated.
+
+2023-10-11         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in (Gory Details): Add an appropriate quote.
+
+2023-10-09         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in (Escape Sequences): Clarify considerably how the
+	\u escape sequence works. Thanks to Eli Zaretskii for the push.
+
+2023-10-04         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* texinfo.tex: Updated from GNULIB.
+
 2023-09-11         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* gawktexi.in: Remove vestiges of doc from when FS == ","

@@ -3,7 +3,8 @@
  */
 
 /*
- * Copyright (C) 1991-2019, 2021, 2022, the Free Software Foundation, Inc.
+ * Copyright (C) 1991-2019, 2021, 2022, 2023
+ * the Free Software Foundation, Inc.
  *
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -235,10 +236,8 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 			 * neither does ok_to_escape.
 			 */
 			if (ok_to_escape == NULL) {
-				if (do_posix)
+				if (do_posix || do_traditional)
 					ok_to_escape = "{}()|*+?.^$\\[]/-";
-				else if (do_traditional)
-					ok_to_escape = "()|*+?.^$\\[]/-";
 				else
 					ok_to_escape = "<>`'BywWsS{}()|*+?.^$\\[]/-";
 			}
