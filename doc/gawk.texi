@@ -21336,7 +21336,7 @@ $ @kbd{gawk -v A=1 -f funky2.awk}
 The @code{typeof()} function provides us a ``window'' into @command{gawk}'s
 inner workings.
 Let's see how using a variable or array element can change
-it's type dynamically.
+its type dynamically.
 Let's start with using a variable as a scalar:
 
 @example
@@ -21361,7 +21361,7 @@ Initially, @code{a} is @code{untyped}, since we don't know yet if it's
 an array or scalar.
 After using it in the call to @code{printf()}, we know it's a scalar.
 However, since it was never given a concrete value (number, string, or regexp),
-it's type is @code{unassigned}.
+its type is @code{unassigned}.
 
 @command{gawk} is peculiar in that we can do the same thing, but
 change @code{a} into an array:
@@ -27867,7 +27867,7 @@ Lines containing @samp{@@group} and @samp{@@end group} are simply removed.
 (@pxref{Join Function}).
 
 The example programs in the online Texinfo source for @cite{@value{TITLE}}
-(@file{gawktexi.in}) have all been bracketed inside @samp{file} and
+(@file{gawk.texi}) have all been bracketed inside @samp{file} and
 @samp{endfile} lines.  The @command{gawk} distribution uses a copy of
 @file{extract.awk} to extract the sample programs and install many
 of them in a standard directory where @command{gawk} can find them.
@@ -39781,18 +39781,8 @@ calls the C library @code{strptime()} function with the given values.
 If the parsing succeeds, the results are passed to the C library
 @code{mktime()} function, and its result is returned, expressing
 the time in seconds since the epoch in the current local timezone,
-regardless of any timezone specified in the string arguments.  (This
-is the same as @command{gawk}'s built-in @code{systime()} function.)
-Otherwise it returns @minus{}1 upon error. In the latter case,
-
-Note that the underlying @code{strptime()} C library routine apparently
-ignores any time zone indication in the date string, producing values
-relative to the current time zone.
-@ignore
-It might be better to have this
-routine return a string similar to what @command{gawk}'s @code{mktime()}
-function expects, but we ran out of energy.
-@end ignore
+regardless of any timezone specified in the string arguments.
+Otherwise it returns @minus{}1 upon error.
 @end table
 
 @node Extension Sample API Tests
@@ -42264,19 +42254,14 @@ The @command{troff} source for a manual page describing @command{gawk}.
 This is distributed for the convenience of Unix users.
 
 @cindex Texinfo
-@item doc/gawktexi.in
-@itemx doc/sidebar.awk
+@item doc/gawk.texi
 The Texinfo source file for this @value{DOCUMENT}.
-It should be processed by @file{doc/sidebar.awk}
-before processing with @command{texi2dvi} or @command{texi2pdf}
+It should be processed by
+@command{texi2dvi} or @command{texi2pdf}
 to produce a printed document, and
-with @command{makeinfo} to produce an Info or HTML file.
+by @command{makeinfo} to produce an Info or HTML file.
 The @file{Makefile} takes care of this processing and produces
 printable output via @command{texi2dvi} or @command{texi2pdf}.
-
-@item doc/gawk.texi
-The file produced after processing @file{gawktexi.in}
-with @file{sidebar.awk}.
 
 @item doc/gawk.info
 The generated Info file for this @value{DOCUMENT}.
