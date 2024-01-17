@@ -1,3 +1,17 @@
+2024-01-13         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* time.c (do_gettimeofday): Small bug fix. Thanks to
+	Andrew Schorr for pointing it out.
+
+2024-01-12         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Use newer interfaces for getting the time if they're available.
+	Thanks to Andreas Schwab <schwab@suse.de> and Andrew Schorr.
+
+	* time.c (do_gettimeofday): Use clock_gettime() or gettimeofday() or
+	time(), in that order.
+	* configure.ac: Add check for clock_gettime().
+
 2023-11-02         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.3.0: Release tar ball made.
