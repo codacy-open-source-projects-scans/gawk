@@ -19952,7 +19952,7 @@ normal representations are used.
 @quotation NOTE
 Similar to @code{printf()}, some versions of @code{strftime()} support
 the use of flags between the @code{%} and the format specification
-letter.  Check your local manpage for @code{strftime()} to see if it
+letter.  Check your local man page for @code{strftime()} to see if it
 supports flags or not, and what they are. Be aware, however, that using
 any such flags is likely to make your script less portable to other systems.
 @end quotation
@@ -39396,7 +39396,10 @@ else
 
 @cindex @code{inplace} extension
 The @code{inplace} extension emulates GNU @command{sed}'s @option{-i} option,
-which performs ``in-place'' editing of each input file.
+which performs ``in-place'' editing of each input file.  Like GNU @command{sed},
+the @code{inplace} extension replaces links (both hard and symbolic) with new
+files.  If you wish to affect the target, you must dereference it first, for
+example using @command{realpath} from GNU Coreutils.
 It uses the bundled @file{inplace.awk} include file to invoke the extension
 properly.  This extension makes use of the namespace facility to place
 all the variables and functions in the @code{inplace} namespace
