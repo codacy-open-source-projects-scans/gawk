@@ -1327,7 +1327,9 @@ fmt0:
 
 	return buf;
 #else
+	static char empty[] = "";
 	cant_happen("%s", "trying to format GMP integer");
+	return empty;
 #endif
 }
 
@@ -1479,7 +1481,7 @@ format_float(NODE *arg, struct flags *flags)
 			buflen *= 2;
 		}
 #else
-		cant_happen("trying to format GMP/MPFR number");
+		cant_happen("%s", "trying to format GMP/MPFR number");
 #endif
 	} else {
 		if (flags->have_prec || tolower(flags->format) != 'a') {
@@ -1816,7 +1818,8 @@ zero_fill_to_precision(char *number_value, struct flags *flags)
 	int prec = flags->precision;
 	size_t val_len = strlen(number_value);
 
-	buflen = flags->precision + 1;	// we know val_len < precision
+	buflen = (flags->negative || flags->plus || flags->space) +
+			flags->precision + 1;	// we know val_len < precision
 
 	emalloc(buf1, char *, buflen, "zero_fill_to_precision");
 	cp = buf1;

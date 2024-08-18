@@ -1,3 +1,39 @@
+2024-08-16         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* printf.c (zero_fill_to_precision): Fix calculation of buflen.
+	Thanks and a tip of the hatlo to Address Sanitizer.
+
+2024-08-12         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* awkgram.y (push_ns_onto_namespace_chain): New function.
+	(mk_function, set_namespace): Use it.
+
+2024-08-12         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Fix some C23 compilation issues. THanks to
+	Jeffrey Cliff <jeffrey.cliff@gmail.com> for the report.
+
+	* awkgram.y (get_src_buf): Remove obsolete comment.
+	* io.c (iop_alloc, get_read_timeout): Fix casts for read.
+
+2024-08-11         John E. Malmberg      <wb8tyw@qsl.net>
+
+	* printf.c (format_mpg_integer_digits): Improved fix
+	from Arnold for if !HAVE_MPFR.
+
+2024-08-11         John E. Malmberg      <wb8tyw@qsl.net>
+
+	* printf.c (format_float): Fix cant_happen macro call.
+	(format_mpg_integer_digits): Return NULL if !HAVE_MPFR.
+
+2024-08-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Thanks again to Michal Jaegermann for tips on removing
+	compiler warnings:
+
+	* eval.c (cmp_scalars): Default ret to false and add a
+	default case to the switch.
+
 2024-08-09         Arnold D. Robbins     <arnold@skeeve.com>
 
 	Thanks to Michal Jaegermann for tips on removing
