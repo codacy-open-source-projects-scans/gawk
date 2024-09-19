@@ -56,7 +56,7 @@
 @c applies to and all the info about who's publishing this edition
 
 @c These apply across the board.
-@set UPDATE-MONTH Giugno 2024
+@set UPDATE-MONTH Settembre 2024
 @set VERSION 5.3
 @set PATCHLEVEL 1
 
@@ -32232,6 +32232,25 @@ Risolvere questo problema.
 @c Exercise: Fix this, w/array and new line as key to original line
 
 @item
+Le versioni POSIX di @command{grep} accettano
+un'opzione @option{-F} per chiedere a @command{grep}
+di cercare stringhe letterali [e non espressioni regolari].
+Aggiungete allo @dfn{script} @file{egrep.awk} il supporto
+per tale opzione.
+
+@item
+Analogamente, le versioni POSIX di @command{grep} consentono
+di specificare pi@`u di un'espressione regolare da trovare,
+in due differenti modi.
+Si pu@`o fornire una stringa racchiusa tra apici sulla riga
+di comando, in cui ogni espressione regolare @`e separata dalla
+successiva da un ritorno a capo.
+Oppure si pu@`o usare l'opzione @option{-f} per fornire il
+nome di un file che contiene le espressioni regolari da
+cercare, una per riga.
+Aggiungete entrambe queste funzionalit@`a.
+
+@item
 La versione POSIX di @command{id} accetta opzioni che controllano quali
 informazioni stampare.  Modificare la versione @command{awk}
 (@pxref{Programma id}) per accettare gli stessi argomenti e funzionare allo
@@ -38776,7 +38795,7 @@ BEGIN @{
 @noindent
 produce il seguente output quando viene eseguito sul sistema
 dell'autore:@footnote{@`E possibile che l'output sia completamente diverso, se la
-libreria C presente nel sistema in uso non si conforma, per @code{printf},
+libreria C presente nel sistema in uso non si conforma, per @code{printf()},
 alla regola IEEE 754
 di arrotondamento al valore pari in caso di equidistanza.}
 
@@ -49421,6 +49440,20 @@ Questo programma pu@`o essere utile se la funzionalit@`a @code{@@include}
 di @command{gawk} non risponde alle vostre esigenze.
 Per ulteriori informazioni, si veda
 @uref{https://www.kylheku.com/cgit/cppawk/}.
+
+@cindex Gardner, Ray
+@cindex @command{wak} (versione di @command{awk})
+@item @command{wak}
+@command{wak} (una permutazione delle lettere di @command{awk}) @`e una
+versione ridotta di @command{awk},
+per lo pi@`u compatibile con lo standard POSIX,
+scritta in C da Ray Gardner.
+Il codice sorgente @`e disponibile nel
+@uref{https://github.com/raygard/wak,
+suo archivio Github}.  Alcuni interessanti articoli relativi al
+suo sviluppo possono essere trovati nel
+@uref{https://www.raygard.net/awkdoc/,
+weblog} dell'autore.
 
 @item Altre versioni
 Si veda anche [in inglese] la sezione ``Versions and implementations''

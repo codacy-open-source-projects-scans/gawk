@@ -54,7 +54,7 @@
 @c applies to and all the info about who's publishing this edition
 
 @c These apply across the board.
-@set UPDATE-MONTH June, 2024
+@set UPDATE-MONTH September, 2024
 @set VERSION 5.3
 @set PATCHLEVEL 1
 
@@ -29024,6 +29024,20 @@ output, and not the original one.  Fix this problem.
 @c Exercise: Fix this, w/array and new line as key to original line
 
 @item
+POSIX versions of @command{grep} accept a @option{-F} option which
+causes @command{grep} to match fixed strings. Add support for
+this to @file{egrep.awk}.
+
+@item
+Similarly, POSIX versions of @command{grep} allow you to
+provide multiple patterns to match, in either of two ways.
+You may provide a quoted string on the command line where
+the patterns are separated by newlines. Or you may use the
+@option{-f} option to provide a file containing the patterns,
+one per line.
+Implement both of these features.
+
+@item
 The POSIX version of @command{id} takes options that control which
 information is printed.  Modify the @command{awk} version
 (@pxref{Id Program}) to accept the same arguments and perform in the
@@ -34891,7 +34905,7 @@ BEGIN @{
 produces the following output when run on the author's system:@footnote{It
 is possible for the output to be completely different if the
 C library in your system does not use the IEEE 754 even-rounding
-rule to round halfway cases for @code{printf}.}
+rule to round halfway cases for @code{printf()}.}
 
 @example
 -3.5 => -4
@@ -44347,6 +44361,17 @@ used like @command{awk}. It invokes the C preprocessor (GNU @command{cpp}) on th
 code and calls Awk on the result.''  This program may be of use if
 the way @command{gawk}'s @code{@@include} facility works doesn't suit
 your needs.  For more information, see @uref{https://www.kylheku.com/cgit/cppawk/}.
+
+@cindex Gardner, Ray
+@cindex @command{wak} (@command{awk} implementation)
+@item @command{wak}
+@command{wak} (a permutation of the letters in @command{awk}) is a small,
+mostly POSIX compatible version of @command{awk} written in C by
+Ray Gardner.
+The source code is available from @uref{https://github.com/raygard/wak,
+its Github repository}.  Some nice articles about its development
+may be found in the author's @uref{https://www.raygard.net/awkdoc/,
+weblog}.
 
 @item Other versions
 See also the ``Versions and implementations'' section of the
