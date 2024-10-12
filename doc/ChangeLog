@@ -1,3 +1,14 @@
+2024-10-06         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawk.texi (Shadowed Variables): New section. Original
+	text contributed by John Naman, <gawker@gmail.com>.
+
+2024-10-05         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawk.texi: Move @cindex lines to be before @enumerate /
+	@itemize.  Thanks to Thérèse Godefroy <godef.th@free.fr>
+	for the report.
+
 2024-09-17         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.3.1: Release tar made.
