@@ -1,3 +1,32 @@
+2025-08-19         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* l2v.awk: Fixes for LRM and RLM direction marks.
+
+2025-07-06         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* l2v.awk: Renamed from l2p.awk.  Minor code cleanups.
+
+2025-07-01         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* l2p.awk (insert_text): New function, factoring out repeated code.
+
+2025-06-30         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* l2p.awk: New file.
+
+2025-04-06         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* uudecode.c: New file.
+
+2025-04-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* 5.3.2: Release tar made.
+
+2025-02-16         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* bisect_run_test.sh, gen-po-sh.sh, mpfr-percent-a.awk,
+	signstuff.c: New files.
+
 2024-09-17         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.3.1: Release tar made.

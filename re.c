@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 1991-2019, 2021-2024
+ * Copyright (C) 1991-2019, 2021-2025
  * the Free Software Foundation, Inc.
  *
  * This file is part of GAWK, the GNU implementation of the
@@ -37,7 +37,7 @@ static struct localeinfo localeinfo;
 /* make_regexp --- generate compiled regular expressions */
 
 Regexp *
-make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
+make_regexp(char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 {
 	static char metas[] = ".*+(){}[]|?^$\\";
 	Regexp *rp;
@@ -53,8 +53,22 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 	int i;
 	static struct dfa* dfaregs[2] = { NULL, NULL };
 	static bool nul_warned = false;
+	char save;
+	size_t savelen;
 
-	assert(s[len] == '\0');
+	/*
+	 * 10/2025: We used to have:
+	 *
+	 *	assert(s[len] == '\0');
+	 *
+	 * here, but data can come in, by way of re_update(), that is from $0 or
+	 * elsewhere where there is no final '\0'. So we save and restore
+	 * the character at s[len] and force a '\0' into position there.
+	 * It needs to be a C string for use in error messages.
+	 */
+	savelen = len;
+	save = s[len];
+	s[len] = '\0';
 
 	if (do_lint && ! nul_warned && memchr(s, '\0', len) != NULL) {
 		nul_warned = true;
@@ -82,10 +96,10 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 	 * from that.
 	 */
 	if (buf == NULL) {
-		emalloc(buf, char *, len + 1, "make_regexp");
+		emalloc(buf, char *, len + 1);
 		buflen = len;
 	} else if (len > buflen) {
-		erealloc(buf, char *, len + 1, "make_regexp");
+		erealloc(buf, char *, len + 1);
 		buflen = len;
 	}
 	dest = buf;
@@ -233,10 +247,11 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 			/*
 			 * The posix and traditional flags do not change
 			 * once the awk program is running. Therefore,
-			 * neither does ok_to_escape.
+			 * neither does ok_to_escape. --posix implies
+			 * --traditional, so only need to check do_traditional.
 			 */
 			if (ok_to_escape == NULL) {
-				if (do_posix || do_traditional)
+				if (do_traditional)
 					ok_to_escape = "{}()|*+?.^$\\[]/-";
 				else
 					ok_to_escape = "<>`'BywWsS{}()|*+?.^$\\[]/-";
@@ -261,9 +276,9 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 	*dest = '\0';
 	len = dest - buf;
 
-	ezalloc(rp, Regexp *, sizeof(*rp), "make_regexp");
+	ezalloc(rp, Regexp *, sizeof(*rp));
 	rp->pat.allocated = 0;	/* regex will allocate the buffer */
-	emalloc(rp->pat.fastmap, char *, 256, "make_regexp");
+	emalloc(rp->pat.fastmap, char *, 256);
 
 	/*
 	 * Lo these many years ago, had I known what a P.I.T.A. IGNORECASE
@@ -274,7 +289,7 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 	 * character sets only.
 	 *
 	 * On the other hand, if we do have a single-byte character set,
-	 * using the casetable should give  a performance improvement, since
+	 * using the casetable should give a performance improvement, since
 	 * it's computed only once, not each time a regex is compiled.  We
 	 * also think it's probably better for portability.  See the
 	 * discussion by the definition of casetable[] in eval.c.
@@ -310,6 +325,7 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 		if (! canfatal) {
 			/* rerr already gettextized inside regex routines */
 			error("%s: /%s/", rerr, s);
+			s[savelen] = save;
  			return NULL;
 		}
 		fatal("invalid regexp: %s: /%s/", rerr, s);
@@ -339,6 +355,7 @@ make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal)
 		}
 	}
 
+	s[savelen] = save;
 	return rp;
 }
 
@@ -598,6 +615,7 @@ reflags2str(int flagval)
 		{ RE_UNMATCHED_RIGHT_PAREN_ORD, "RE_UNMATCHED_RIGHT_PAREN_ORD" },
 		{ RE_NO_POSIX_BACKTRACKING, "RE_NO_POSIX_BACKTRACKING" },
 		{ RE_NO_GNU_OPS, "RE_NO_GNU_OPS" },
+		{ RE_DEBUG, "RE_DEBUG" },	// not actually used in the code anymore, :-(
 		{ RE_INVALID_INTERVAL_ORD, "RE_INVALID_INTERVAL_ORD" },
 		{ RE_ICASE, "RE_ICASE" },
 		{ RE_CARET_ANCHORS_HERE, "RE_CARET_ANCHORS_HERE" },
@@ -674,23 +692,26 @@ again:
 	if (sp == NULL)
 		goto done;
 
-	for (count++, sp++; *sp != '\0'; sp++) {
+	sp++;
+	count = 1;
+	/*
+	 * Skip over the following:
+	 * [^]...]
+	 * [\]...]
+	 * []...]
+	 */
+	if (*sp == '^')
+		sp++;
+	if (*sp == '\\')
+		sp += 2;
+	else if (*sp == ']')
+		sp++;
+
+	for (; sp < end && *sp != '\0'; sp++) {
 		if (*sp == '[')
 			count++;
-		/*
-		 * ] as first char after open [ is skipped
-		 * \] is skipped
-		 * [^]] is skipped
-		 */
-		if (*sp == ']' && sp > sp2) {
-			if (sp[-1] != '[' && sp[-1] != '\\')
-				count--;
-			else if ((sp - sp2) >= 2
-				&& sp[-1] == '^' && sp[-2] == '[')
-				;
-			else
-				count--;
-		}
+		else if (*sp == ']')
+			count--;
 
 		if (count == 0) {
 			sp++;	/* skip past ']' */

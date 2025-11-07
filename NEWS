@@ -1,4 +1,4 @@
-   Copyright (C) 2019, 2020, 2021, 2022, 2023, 2024
+   Copyright (C) 2019, 2020, 2021, 2022, 2023, 2024, 2025
    Free Software Foundation, Inc.
    
    Copying and distribution of this file, with or without modification,
@@ -12,7 +12,64 @@ Changes from 5.3.x to 5.4.0
    but does not reset the namespace for the included file to "awk". See
    the manual for details.
 
-Changes from 5.3.1 to 5.3.x
+2. When using lshift() or rshift() and attempting to shift by as many
+   or more bits than in a uintmax_t, gawk returns zero, instead of
+   whatever the C compiler and hardware might have done.
+
+3. Gawk's use of persistent memory has changed somewhat:
+   A. It's now possible to use persistent memory and dynamic extensions
+      without problems. Gawk notices if an extension is being loaded from
+      a different path than what was first used and produces a fatal error
+      in this case.
+   B. Gawk generates a warning if the version of gawk saved in the backing
+      file doesn't match that of the current running gawk.
+   C. Gawk now stores additional meta-information in the backing file.
+      This means that if you have a backing file with important data
+      in it, you should dump the data to a text file using the old version,
+      create a new backing file, and then read your data back in with
+      the new version.
+
+4. The ordchr extension now supports multibyte / wide characters.
+
+5. Per the 2024 POSIX standard, `length(array)' is no longer an extension,
+   but a regular feature.  Thus --posix no longer rejects it and --lint
+   no longer warns about it.
+
+6. The --traditional option has been rationalized to bring gawk into
+   sync with BWK awk. It no longer affects the return code from system(),
+   and it no longer prevents using a regexp for RS. Internally, the
+   code was cleaned up some as well.
+
+7. Assertions in the C code are now enabled.  To disable them, manually
+   edit the various Makefiles after running configure and before
+   running make. You will need to add -DNDEBUG to the CFLAGS variable.
+
+8. PMA should now work on OpenBSD 7.*.  It turns out that executables on
+   that system are PIE executables, so gawk must be built with the
+   -no-pie loader flag.  It is also now enabled on NetBSD.
+
+9. Hexadecimal floating-point values may now be used with strtonum() and
+   with the -n/--non-decimal-data option.
+
+10. As usual, a number of small bugs have been fixed; see the ChangeLog
+    for the details.
+
+Changes from 5.3.2 to 5.3.x
+---------------------------
+
+1. The Hebrew translation has been revived.
+
+2. All non-standard variables are now not installed for --traditional
+   and --posix.
+
+3. It's been discovered that persistent memory and dynamic extensions don't mix.
+   For now, trying this combination produces a fatal error. It may one day
+   get fixed. Or, it may not.
+
+4. A bug in the API has been fixed whereby using a numeric index to set an
+   array element will work. As a result, the API minor version was increased to 1.
+
+Changes from 5.3.1 to 5.3.2
 ---------------------------
 
 1. The pretty printer now produces fewer spurious newlines; at the
@@ -20,7 +77,22 @@ Changes from 5.3.1 to 5.3.x
    the block or function that follows them. The extra final newline
    is no longer produced.
 
-XX. As usual, there have been several minor code cleanups and bug fixes.
+2. OpenVMS 9.2-2 x86_64 is now supported.
+
+3. On Linux and macos systems, the -no-pie linker flag is no longer required.
+   PMA now works on macos systems with Apple silicon, and not just
+   Intel systems.
+
+4. Still more subtle issues related to uninitialized array elements have
+   been fixed.
+
+5. Associative arrays should now not grow quite as fast as they used to.
+
+6. The code and documentation are now consistent with each other with
+   respect to path searching and adding .awk to the filename. Both
+   are always done, even with --posix and --traditional.
+
+7. As usual, there have been several minor code cleanups and bug fixes.
    See the ChangeLog for details.
 
 Changes from 5.3.0 to 5.3.1

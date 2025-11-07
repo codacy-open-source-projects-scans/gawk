@@ -14,6 +14,9 @@
 /* Define to 1 if the `getpgrp' function requires zero arguments. */
 #undef GETPGRP_VOID
 
+/* Define to 1 if we have ADDR_NO_RANDOMIZE value */
+#undef HAVE_ADDR_NO_RANDOMIZE
+
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 
@@ -177,8 +180,14 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
+/* Define to 1 if you have the `personality' function. */
+#undef HAVE_PERSONALITY
+
 /* Define to 1 if you have the `posix_openpt' function. */
 #undef HAVE_POSIX_OPENPT
+
+/* Define to 1 if you have the `posix_spawnp' function. */
+#undef HAVE_POSIX_SPAWNP
 
 /* Define to 1 if you have the `setenv' function. */
 #undef HAVE_SETENV
@@ -200,6 +209,9 @@
 
 /* we have sockets on this system */
 #undef HAVE_SOCKETS
+
+/* Define to 1 if you have the <spawn.h> header file. */
+#undef HAVE_SPAWN_H
 
 /* Define to 1 if you have the <stdbool.h> header file. */
 #undef HAVE_STDBOOL_H
@@ -275,6 +287,9 @@
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
+
+/* Define to 1 if you have the <sys/personality.h> header file. */
+#undef HAVE_SYS_PERSONALITY_H
 
 /* Define to 1 if you have the <sys/select.h> header file. */
 #undef HAVE_SYS_SELECT_H
@@ -355,6 +370,9 @@
 
 /* systems should define this type here */
 #undef HAVE_WINT_T
+
+/* Define to 1 if you have the `_NSGetExecutablePath' function. */
+#undef HAVE__NSGETEXECUTABLEPATH
 
 /* Define to 1 if you have the `__etoa_l' function. */
 #undef HAVE___ETOA_L

@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2012, 2013, 2015, 2017, 2018, 2019, 2021, 2022, 2024,
+ * Copyright (C) 2012, 2013, 2015, 2017, 2018, 2019, 2021, 2022, 2024, 2025,
  * the Free Software Foundation, Inc.
  *
  * This file is part of GAWK, the GNU implementation of the
@@ -307,6 +307,9 @@ force_mpnum(NODE *n, int do_nondec, int use_locale)
 	if (do_nondec)
 		base = get_numbase(cp1, cpend - cp1, use_locale);
 
+	if (base == 16 && (strchr(cp, 'p') != NULL || strchr(cp, 'P') != NULL))
+		goto isfloat;
+
 	if (base != 10 || ! mpg_maybe_float(cp1, use_locale)) {
 		mpg_zero(n);
 		errno = 0;
@@ -316,6 +319,7 @@ force_mpnum(NODE *n, int do_nondec, int use_locale)
 		goto done;
 	}
 
+isfloat:
 	if (is_mpg_integer(n)) {
 		mpz_clear(n->mpg_i);
 		n->flags &= ~MPZN;
@@ -350,6 +354,7 @@ mpg_force_number(NODE *n)
 	char *cp, *cpend;
 
 	if (n->type == Node_elem_new) {
+		elem_new_reset(n);
 		n->type = Node_val;
 
 		return n;
@@ -980,7 +985,7 @@ get_intval(NODE *t1, int argnum, const char *op)
                                 	op, argnum, left)
 				);
 
-			emalloc(pz, mpz_ptr, sizeof (mpz_t), "get_intval");
+			emalloc(pz, mpz_ptr, sizeof (mpz_t));
 			mpz_init(pz);
 			return pz;	/* should be freed */
 		}
@@ -999,7 +1004,7 @@ get_intval(NODE *t1, int argnum, const char *op)
 				);
 		}
 
-		emalloc(pz, mpz_ptr, sizeof (mpz_t), "get_intval");
+		emalloc(pz, mpz_ptr, sizeof (mpz_t));
 		mpz_init(pz);
 		mpfr_get_z(pz, left, MPFR_RNDZ);	/* float to integer conversion */
 		return pz;	/* should be freed */
@@ -1614,15 +1619,15 @@ mpg_mod(NODE *t1, NODE *t2)
 		 * So instead we use mpz_tdiv_qr() to get the correct result
 		 * and just throw away the quotient. We could not find any
 		 * reason why mpz_mod() wasn't working correctly.
+		 *
+		 * 10/2025: Using mpz_tdiv_r() generates just the remainder,
+		 * making things easier.
 		 */
-		NODE *dummy_quotient;
 
 		if (mpz_sgn(t2->mpg_i) == 0)
 			fatal(_("division by zero attempted"));
 		r = mpg_integer();
-		dummy_quotient = mpg_integer();
-		mpz_tdiv_qr(dummy_quotient->mpg_i, r->mpg_i, t1->mpg_i, t2->mpg_i);
-		unref(dummy_quotient);
+		mpz_tdiv_r(r->mpg_i, t1->mpg_i, t2->mpg_i);
 	} else {
 		mpfr_ptr p1, p2;
 		p1 = MP_FLOAT(t1);

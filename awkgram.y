@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 1986, 1988, 1989, 1991-2024 the Free Software Foundation, Inc.
+ * Copyright (C) 1986, 1988, 1989, 1991-2025 the Free Software Foundation, Inc.
  *
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -709,10 +709,10 @@ statement
 					}
 
 					if (case_values == NULL)
-						emalloc(case_values, const char **, sizeof(char *) * maxcount, "statement");
+						emalloc(case_values, const char **, sizeof(char *) * maxcount);
 					else if (case_count >= maxcount) {
 						maxcount += 128;
-						erealloc(case_values, const char **, sizeof(char*) * maxcount, "statement");
+						erealloc(case_values, const char **, sizeof(char*) * maxcount);
 					}
 					case_values[case_count++] = caseval;
 				} else {
@@ -1289,36 +1289,6 @@ regular_print:
 			$$ = list_append(list_append($4, $2), $1);
 		}
 	  }
-	| LEX_DELETE '(' NAME ')'
-		  /*
-		   * this is for tawk compatibility. maybe the warnings
-		   * should always be done.
-		   */
-	  {
-		static bool warned = false;
-		char *arr = $3->lextok;
-
-		if (do_lint && ! warned) {
-			warned = true;
-			lintwarn_ln($1->source_line,
-				_("`delete(array)' is a non-portable tawk extension"));
-		}
-		if (do_traditional) {
-			error_ln($1->source_line,
-				_("`delete(array)' is a non-portable tawk extension"));
-		}
-		$3->memory = variable($3->source_line, arr, Node_var_new);
-		$3->opcode = Op_push_array;
-		$1->expr_count = 0;
-		$$ = list_append(list_create($3), $1);
-
-		if (! do_posix && ! do_traditional) {
-			if ($3->memory == symbol_table)
-				fatal(_("`delete' is not allowed with SYMTAB"));
-			else if ($3->memory == func_table)
-				fatal(_("`delete' is not allowed with FUNCTAB"));
-		}
-	  }
 	| exp
 	  {
 		$$ = optimize_assignment($1);
@@ -1785,7 +1755,7 @@ common_exp
 			n1 = force_string(n1);
 			n2 = force_string(n2);
 			nlen = n1->stlen + n2->stlen;
-			erealloc(n1->stptr, char *, nlen + 1, "constant fold");
+			erealloc(n1->stptr, char *, nlen + 1);
 			memcpy(n1->stptr + n1->stlen, n2->stptr, n2->stlen);
 			n1->stlen = nlen;
 			n1->stptr[nlen] = '\0';
@@ -2619,7 +2589,7 @@ yyerror(const char *m, ...)
 	count = strlen(mesg) + 1;
 	if (lexptr != NULL)
 		count += (lexeme - thisline) + 2;
-	ezalloc(buf, char *, count+1, "yyerror");
+	ezalloc(buf, char *, count+1);
 
 	bp = buf;
 
@@ -2830,9 +2800,9 @@ parse_program(INSTRUCTION **pcode, bool from_eval)
 		errcount++;
 
 	if (args_array == NULL)
-		emalloc(args_array, NODE **, (max_args + 2) * sizeof(NODE *), "parse_program");
+		emalloc(args_array, NODE **, (max_args + 2) * sizeof(NODE *));
 	else
-		erealloc(args_array, NODE **, (max_args + 2) * sizeof(NODE *), "parse_program");
+		erealloc(args_array, NODE **, (max_args + 2) * sizeof(NODE *));
 
 	return (ret || errcount);
 }
@@ -2853,7 +2823,7 @@ do_add_srcfile(enum srctype stype, char *src, char *path, SRCFILE *thisfile)
 {
 	SRCFILE *s;
 
-	ezalloc(s, SRCFILE *, sizeof(SRCFILE), "do_add_srcfile");
+	ezalloc(s, SRCFILE *, sizeof(SRCFILE));
 	s->src = estrdup(src, strlen(src));
 	s->fullpath = path;
 	s->stype = stype;
@@ -3020,7 +2990,6 @@ load_library(INSTRUCTION *file, void **srcfile_p)
 		return false;
 	}
 
-
 	if (strlen(src) == 0) {
 		if (do_lint)
 			lintwarn_ln(file->source_line, _("empty filename after @load"));
@@ -3041,7 +3010,7 @@ load_library(INSTRUCTION *file, void **srcfile_p)
 			return false;
 		}
 
-		load_ext(s->fullpath);
+		load_ext(s->src, s->fullpath);
 	}
 
 	*srcfile_p = (void *) s;
@@ -3181,7 +3150,7 @@ get_src_buf()
 					break;
 				}
 			savelen = lexptr - scan;
-			emalloc(buf, char *, savelen + 1, "get_src_buf");
+			emalloc(buf, char *, savelen + 1);
 			memcpy(buf, scan, savelen);
 			thisline = buf;
 			lexptr = buf + savelen;
@@ -3229,7 +3198,7 @@ get_src_buf()
 #undef A_DECENT_BUFFER_SIZE
 		sourcefile->bufsize = l;
 		newfile = true;
-		emalloc(sourcefile->buf, char *, sourcefile->bufsize, "get_src_buf");
+		emalloc(sourcefile->buf, char *, sourcefile->bufsize);
 		memset(sourcefile->buf, '\0', sourcefile->bufsize);	// keep valgrind happy
 		lexptr = lexptr_begin = lexeme = sourcefile->buf;
 		savelen = 0;
@@ -3259,7 +3228,7 @@ get_src_buf()
 
 			if (savelen > sourcefile->bufsize / 2) { /* long line or token  */
 				sourcefile->bufsize *= 2;
-				erealloc(sourcefile->buf, char *, sourcefile->bufsize, "get_src_buf");
+				erealloc(sourcefile->buf, char *, sourcefile->bufsize);
 				scan = sourcefile->buf + (scan - lexptr_begin);
 				lexptr_begin = sourcefile->buf;
 			}
@@ -3311,11 +3280,11 @@ tokexpand()
 	if (tokstart != NULL) {
 		tokoffset = tok - tokstart;
 		toksize *= 2;
-		erealloc(tokstart, char *, toksize, "tokexpand");
+		erealloc(tokstart, char *, toksize);
 		tok = tokstart + tokoffset;
 	} else {
 		toksize = 60;
-		emalloc(tokstart, char *, toksize, "tokexpand");
+		emalloc(tokstart, char *, toksize);
 		tok = tokstart;
 	}
 	tokend = tokstart + toksize;
@@ -3705,21 +3674,6 @@ collect_regexp:
 end_regexp:
 				yylval = GET_INSTRUCTION(Op_token);
 				yylval->lextok = estrdup(tokstart, tok - tokstart);
-				if (do_lint) {
-					int peek = nextc(true);
-
-					pushback();
-					if (peek == 'i' || peek == 's') {
-						if (source)
-							lintwarn(
-						_("%s: %d: tawk regex modifier `/.../%c' doesn't work in gawk"),
-								source, sourceline, peek);
-						else
-							lintwarn(
-						_("tawk regex modifier `/.../%c' doesn't work in gawk"),
-								peek);
-					}
-				}
 				if (collecting_typed_regexp) {
 					collecting_typed_regexp = false;
 					lasttok = TYPED_REGEXP;
@@ -4459,7 +4413,7 @@ retry:
 		case LEX_EVAL:
 			if (in_main_context())
 				goto out;
-			emalloc(tokkey, char *, tok - tokstart + 1, "yylex");
+			emalloc(tokkey, char *, tok - tokstart + 1);
 			tokkey[0] = '@';
 			memcpy(tokkey + 1, tokstart, tok - tokstart);
 			yylval = GET_INSTRUCTION(Op_token);
@@ -4744,6 +4698,14 @@ snode(INSTRUCTION *subn, INSTRUCTION *r)
 #endif /* SUPPLY_INTDIV */
 	} else if (r->builtin == do_match) {
 		static bool warned = false;
+		static bool param_warned = false;
+
+		ip = subn->nexti->lasti;
+		if (! param_warned
+		    && (ip->opcode == Op_match_rec || ip->opcode == Op_push_re)) {
+			param_warned = true;
+			warning_ln(subn->source_line, _("match: regexp constant as first argument is probably not what you want"));
+		}
 
 		arg = subn->nexti->lasti->nexti;	/* 2nd arg list */
 		(void) mk_rexp(arg);
@@ -5134,7 +5096,7 @@ check_params(char *fname, int pcount, INSTRUCTION *list)
 
 	assert(pcount > 0);
 
-	emalloc(pnames, char **, pcount * sizeof(char *), "check_params");
+	emalloc(pnames, char **, pcount * sizeof(char *));
 
 	for (i = 0, p = list->nexti; p != NULL; i++, p = np) {
 		np = p->nexti;
@@ -5203,8 +5165,8 @@ func_use(const char *name, enum defref how)
 
 	/* not in the table, fall through to allocate a new one */
 
-	ezalloc(fp, struct fdesc *, sizeof(struct fdesc), "func_use");
-	emalloc(fp->name, char *, len + 1, "func_use");
+	ezalloc(fp, struct fdesc *, sizeof(struct fdesc));
+	emalloc(fp->name, char *, len + 1);
 	strcpy(fp->name, name);
 	fp->next = ftable[ind];
 	ftable[ind] = fp;
@@ -6680,7 +6642,7 @@ set_profile_text(NODE *n, const char *str, size_t len)
 	if (do_pretty_print) {
 		// two extra bytes: one for NUL termination, and another in
 		// case we need to add a leading minus sign in add_sign_to_num
-		emalloc(n->stptr, char *, len + 2, "set_profile_text");
+		emalloc(n->stptr, char *, len + 2);
 		memcpy(n->stptr, str, len);
 		n->stptr[len] = '\0';
 		n->stlen = len;
@@ -6724,7 +6686,7 @@ merge_comments(INSTRUCTION *c1, INSTRUCTION *c2)
 	}
 
 	char *buffer;
-	emalloc(buffer, char *, total + 1, "merge_comments");
+	emalloc(buffer, char *, total + 1);
 
 	strcpy(buffer, c1->memory->stptr);
 	if (c1->comment != NULL) {
@@ -6982,7 +6944,7 @@ qualify_name(const char *name, size_t len)
 		size_t length = strlen(current_namespace) + 2 + len + 1;
 		char *buf;
 
-		emalloc(buf, char *, length, "qualify_name");
+		emalloc(buf, char *, length);
 		sprintf(buf, "%s::%s", current_namespace, name);
 
 		return buf;

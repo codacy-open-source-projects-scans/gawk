@@ -1,3 +1,160 @@
+2025-11-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (LOCALE_CHARSET_TESTS): Move commas, mbstr1 and
+	mbstr2 tests to here.
+
+2025-10-31         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, hex3.
+	* hex3.awk, hex3.ok: New files.
+
+2025-10-29         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, match5.
+	* match5.awk, match5.in, match5.ok: New files.
+
+2025-10-28         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* lintwarn.awk, lintwarn.ok: Adjust after code changes.
+
+2025-10-27         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, linttypeof.
+	* linttypeof.awk, linttypeof.ok: New files.
+
+2025-10-22         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (fmtspcl): Restore this test.
+	* fmtspcl.awk: Code updated to handle Inf values correctly.
+	* fmtspcl.ok: Updated.
+
+	Unrelated:
+
+	* asortsymtab-mpfr.ok: Udated.
+
+2025-10-22         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, lintsubarray.
+	* lintsubarray.awk, lintsubarray.ok: New files.
+
+	* Makefile.am (EXTRADIST): New test, matchbadarg2.
+	* matchbadarg2.awk, matchbadarg2.in, matchbadarg2.ok: New files.
+
+2025-10-17         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, matchbadarg1.
+	* matchbadarg1.awk, matchbadarg1.in, matchbadarg1.ok: New files.
+
+2025-10-05         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* printfbad4.ok: Update after code change.
+
+2025-07-28         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (NEED_POSIX): Add rscompat here.
+	(NEED_TRADITIONAL): Remove it from here.
+
+2025-07-13         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* elemnew4.awk: Remove calls to stopme(). Oops. Thanks to
+	Hermann Peifer <peifer@gmx.eu> for the report.
+
+2025-07-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, elemnew4.
+	* elemnew4.awk, elemnew4.ok: New files.
+
+2025-05-14         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* inplace1.ok, inplace2.ok, inplace2bcomp.ok, inplace3.ok,
+	inplace3bcomp.ok: Updated after changes in the awk files.
+
+2025-04-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* badargs.ok: Adjusted.
+	* 5.3.2: Release tar made.
+
+2025-03-27         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, splitwht2.
+	* splitwht2.awk, splitwht2.ok: New files.
+
+2025-03-18         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* badargs.ok: Adjusted for test tarball.
+
+2025-03-17         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, indirectbuiltin6.
+	* indirectbuiltin6.awk, indirectbuiltin6.ok: New files.
+
+2025-03-11         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* colonwarn.awk, colonwarn.ok: Updated after code changes.
+
+2025-02-24         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am: Clean up before release.
+	* badargs.ok: Adjusted.
+
+2025-02-14  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* Makefile.am (inplace1, inplace2, inplace2bcomp, inplace3,
+	inplace3bcomp): Work around BSD glitch in the test case,
+	not in Gawk itself.
+
+2025-02-05         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, indirectbuiltin5.
+	* indirectbuiltin5.awk, indirectbuiltin5.ok: New files.
+
+2025-02-05         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, memleak3.
+	* memleak3.awk, memleak3.ok: New files.
+
+2025-02-03         Cristian Ioneci       <mekanofox@astropostale.com>
+
+	* Makefile.am (EXTRADIST): New tests: ar2fn_elnew_sc, ar2fn_elnew_sc2,
+	ar2fn_fmod, ar2fn_unxptyp_aref, ar2fn_unxptyp_val
+
+	* ar2fn_elnew_sc.awk, ar2fn_elnew_sc.ok, ar2fn_elnew_sc2.awk,
+	ar2fn_elnew_sc2.ok, ar2fn_fmod.awk, ar2fn_fmod.ok, ar2fn_unxptyp_aref.awk,
+	ar2fn_unxptyp_aref.ok, ar2fn_unxptyp_val.awk, ar2fn_unxptyp_val.ok: New
+	files.
+
+2025-01-23         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, memleak2.
+	* memleak2.awk, memleak2.ok: New files.
+
+2025-01-22         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, indirectbuiltin4.
+	* indirectbuiltin4.awk, indirectbuiltin4.ok: New files.
+
+2025-01-07         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, indirectbuiltin3.
+	* indirectbuiltin3.awk, indirectbuiltin3.ok: New files.
+
+2025-01-06         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (EXTRADIST): New test, typeof9.
+	* typeof9.awk, typeof9.ok: New files.
+
+2024-10-25         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.am (diffout): Use ${PAGER:-more} instead of
+	${PAGER-more}.
+
+2024-10-21         John Devin            <john.m.devin@gmail.com>
+
+	* Makefile.am (diffout): Use $PAGER or `more' if it's not
+	defined instead of hard coding `more', for output of `make check'.
+	Using `less' would be better, but it's not always available (e.g.,
+	Windows).
+
 2024-10-10         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* lintplus2.ok, mpfrmemok1.ok, nsprof1.ok, nsprof2.ok, nsprof3.ok,

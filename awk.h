@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 1986, 1988, 1989, 1991-2024 the Free Software Foundation, Inc.
+ * Copyright (C) 1986, 1988, 1989, 1991-2025 the Free Software Foundation, Inc.
  *
  * This file is part of GAWK, the GNU implementation of the
  * AWK Programming Language.
@@ -30,21 +30,9 @@
  * any system headers.  Otherwise, extreme death, destruction
  * and loss of life results.
  */
-#if defined(_TANDEM_SOURCE)
-/*
- * config.h forces this even on non-tandem systems but it
- * causes problems elsewhere if used in the check below.
- * so workaround it. bleah.
- */
-#define tandem_for_real	1
-#endif
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
-#if defined(tandem_for_real) && ! defined(_SCO_DS)
-#define _XOPEN_SOURCE_EXTENDED 1
 #endif
 
 #include <stdio.h>
@@ -107,6 +95,12 @@ extern size_t wcitomb (char *s, int wc, mbstate_t *ps);
 /* ----------------- System dependencies (with more includes) -----------*/
 
 /* This section is the messiest one in the file, not a lot that can be done */
+
+/* AIX's <sys/cred.h> uses some names defined here in function prototypes.
+   Therefore, it must be included first or the build fails.  */
+#ifdef _AIX
+# include <sys/cred.h>
+#endif
 
 #ifndef VMS
 #ifdef HAVE_FCNTL_H
@@ -387,7 +381,11 @@ typedef struct exp_node {
 			char *sp;
 			size_t slen;
 			int idx;
-			wchar_t *wsp;
+			union {	// this union is for convenience of space
+				// reuse; the elements aren't otherwise related
+				wchar_t *wsp;
+				char *vn;
+			} z;
 			size_t wslen;
 			struct exp_node *typre;
 			enum commenttype comtype;
@@ -511,8 +509,13 @@ typedef struct exp_node {
 #define stlen	sub.val.slen
 #define stfmt	sub.val.idx
 #define strndmode sub.val.rndmode
-#define wstptr	sub.val.wsp
+#define wstptr	sub.val.z.wsp
 #define wstlen	sub.val.wslen
+
+/* Node_elem_new */
+#define elemnew_vname	sub.val.z.vn
+#define elemnew_parent	sub.val.typre
+
 #ifdef HAVE_MPFR
 #define mpg_numbr	sub.val.nm.mpnum
 #define mpg_i		sub.val.nm.mpi
@@ -1145,6 +1148,8 @@ extern NODE **fields_arr;
 extern int sourceline;
 extern char *source;
 extern int errcount;
+extern const char *version_string;
+extern const char *persist_file;
 extern int (*interpret)(INSTRUCTION *);	/* interpreter routine */
 extern NODE *(*make_number)(double);	/* double instead of AWKNUM on purpose */
 extern NODE *(*str2number)(NODE *);
@@ -1392,13 +1397,13 @@ extern void r_freeblock(void *, int id);
 				__FILE__, __LINE__, __VA_ARGS__)
 
 #ifdef USE_REAL_MALLOC
-#define	emalloc(var,ty,x,str)	(void) (var = (ty) malloc((size_t)(x)))
-#define	ezalloc(var,ty,x,str)	(void) (var = (ty) calloc((size_t)(x), 1))
-#define	erealloc(var,ty,x,str)	(void) (var = (ty) realloc((void *) var, (size_t)(x)))
+#define	emalloc(var,ty,x)	(void) (var = (ty) malloc((size_t)(x)))
+#define	ezalloc(var,ty,x)	(void) (var = (ty) calloc((size_t)(x), 1))
+#define	erealloc(var,ty,x)	(void) (var = (ty) realloc((void *) var, (size_t)(x)))
 #else
-#define	emalloc(var,ty,x,str)	(void) (var = (ty) emalloc_real((size_t)(x), str, #var, __FILE__, __LINE__))
-#define	ezalloc(var,ty,x,str)	(void) (var = (ty) ezalloc_real((size_t)(x), str, #var, __FILE__, __LINE__))
-#define	erealloc(var,ty,x,str)	(void) (var = (ty) erealloc_real((void *) var, (size_t)(x), str, #var, __FILE__, __LINE__))
+#define	emalloc(var,ty,x)	(void) (var = (ty) emalloc_real((size_t)(x), __func__, #var, __FILE__, __LINE__))
+#define	ezalloc(var,ty,x)	(void) (var = (ty) ezalloc_real((size_t)(x), __func__, #var, __FILE__, __LINE__))
+#define	erealloc(var,ty,x)	(void) (var = (ty) erealloc_real((void *) var, (size_t)(x), __func__, #var, __FILE__, __LINE__))
 #endif
 
 #define efree(p)	free(p)
@@ -1574,10 +1579,12 @@ extern STACK_ITEM *grow_stack(void);
 extern void dump_fcall_stack(FILE *fp);
 extern int register_exec_hook(Func_pre_exec preh, Func_post_exec posth);
 extern NODE **r_get_field(NODE *n, Func_ptr *assign, bool reference);
+extern void elem_new_reset(NODE *n);
 extern NODE *elem_new_to_scalar(NODE *n);
 /* ext.c */
 extern NODE *do_ext(int nargs);
-void load_ext(const char *lib_name);	/* temporary */
+void load_ext(const char *name, const char *lib_name);
+extern void init_extension_list(void);
 extern void close_extensions(void);
 extern bool is_valid_identifier(const char *name);
 #ifdef DYNAMIC
@@ -1587,6 +1594,7 @@ extern NODE *get_actual_argument(NODE *, int, bool);
 #define get_scalar_argument(n, i)  get_actual_argument((n), (i), false)
 #define get_array_argument(n, i)   get_actual_argument((n), (i), true)
 #endif
+extern struct extension *extension_list;
 /* field.c */
 extern void init_fields(void);
 extern void init_csv_fields(void);
@@ -1643,6 +1651,7 @@ extern int os_is_setuid(void);
 extern int os_setbinmode(int fd, int mode);
 extern void os_restore_mode(int fd);
 extern void os_maybe_set_errno(void);
+extern void os_disable_aslr(const char *persist_file, char **argv);
 extern size_t optimal_bufsize(int fd, struct stat *sbuf);
 extern int ispath(const char *file);
 extern int isdirpunct(int c);
@@ -1780,7 +1789,7 @@ extern bool out_of_range(NODE *n);
 extern char *format_nan_inf(NODE *n, char format);
 extern bool is_ieee_magic_val(const char *val);
 /* re.c */
-extern Regexp *make_regexp(const char *s, size_t len, bool ignorecase, bool dfa, bool canfatal);
+extern Regexp *make_regexp(char *s, size_t len, bool ignorecase, bool dfa, bool canfatal);
 extern int research(Regexp *rp, char *str, int start, size_t len, int flags);
 extern void refree(Regexp *rp);
 extern void reg_error(const char *s);
@@ -1905,6 +1914,18 @@ POP_SCALAR()
 		fatal(_("attempt to use array `%s' in a scalar context"), array_vname(t));
 	else if (t->type == Node_elem_new)
 		t = elem_new_to_scalar(t);
+	else if (t->type == Node_var_new) {
+		NODE *n = t;
+
+		t->type = Node_var;
+		// this should be a call to dupnode(), but there are
+		// ordering problems since we're in awk.h. Just
+		// do it manually, since it's the null string
+		t->var_value = Nnull_string;
+		t->var_value->valref++;
+		t = t->var_value;
+		DEREF(n);
+	}
 
 	return t;
 }
@@ -1976,6 +1997,7 @@ static inline NODE *
 force_string_fmt(NODE *s, const char *fmtstr, int fmtidx)
 {
 	if (s->type == Node_elem_new) {
+		elem_new_reset(s);
 		s->type = Node_val;
 
 		return s;
@@ -2017,6 +2039,7 @@ static inline NODE *
 force_number(NODE *n)
 {
 	if (n->type == Node_elem_new) {
+		elem_new_reset(n);
 		n->type = Node_val;
 
 		return n;
@@ -2042,7 +2065,13 @@ force_number(NODE *n)
 static inline NODE *
 fixtype(NODE *n)
 {
-	assert(n->type == Node_val);
+	int flags = STRING|STRCUR|NUMBER|NUMCUR;
+	if (n->type == Node_var && (n->flags & flags) == flags)
+		n = n->var_value;	// converted from Node_elem_new
+
+	if (n->type != Node_val)
+		cant_happen("%s: expected Node_val: got %s",
+				__func__, nodetype2str(n->type));
 	if ((n->flags & (NUMCUR|USER_INPUT)) == USER_INPUT)
 		return force_number(n);
 	if ((n->flags & INTIND) != 0)
@@ -2081,8 +2110,8 @@ emalloc_real(size_t count, const char *where, const char *var, const char *file,
 
 	ret = (void *) malloc(count);
 	if (ret == NULL)
-		fatal(_("%s:%d:%s: %s: cannot allocate %ld bytes of memory: %s"),
-			file, line, where, var, (long) count, strerror(errno));
+		fatal(_("%s:%d:%s: %s: cannot allocate %zu bytes of memory: %s"),
+			file, line, where, var, count, strerror(errno));
 
 	return ret;
 }
@@ -2099,8 +2128,8 @@ ezalloc_real(size_t count, const char *where, const char *var, const char *file,
 
 	ret = (void *) calloc(1, count);
 	if (ret == NULL)
-		fatal(_("%s:%d:%s: %s: cannot allocate %ld bytes of memory: %s"),
-			file, line, where, var, (long) count, strerror(errno));
+		fatal(_("%s:%d:%s: %s: cannot allocate %zu bytes of memory: %s"),
+			file, line, where, var, count, strerror(errno));
 
 	return ret;
 }
@@ -2117,8 +2146,8 @@ erealloc_real(void *ptr, size_t count, const char *where, const char *var, const
 
 	ret = (void *) realloc(ptr, count);
 	if (ret == NULL)
-		fatal(_("%s:%d:%s: %s: cannot reallocate %ld bytes of memory: %s"),
-			file, line, where, var, (long) count, strerror(errno));
+		fatal(_("%s:%d:%s: %s: cannot reallocate %zu bytes of memory: %s"),
+			file, line, where, var, count, strerror(errno));
 
 	return ret;
 }

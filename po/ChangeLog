@@ -1,3 +1,90 @@
+2025-08-27         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* he.po: Small translation fix.
+	* he-visual.po: Updated.
+
+2025-08-19         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* he.po: Add two translations.
+	* he-visual.po: Updated.
+
+2025-08-18         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* he.po: Small fix.
+	* he-visual.po: New file.
+
+2025-08-17         Yaron Shahrabani      <sh.yaron@gmail.com>
+
+	* he.po: Updated.
+
+2025-07-20         Antonio Giovanni Colombo   <azc100@gmail.com>
+
+	* it.po: Updated.
+
+2025-07-16         Antonio Giovanni Colombo   <azc100@gmail.com>
+
+	* it.po: Updated.
+
+2025-05-30         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* zh_CN.po: Updated.
+
+2025-05-25         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* sr.po: Updated.
+
+2025-05-16         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* xhe.po: Removed.
+
+2025-05-16         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* he.po: Updated!
+	* LINGUAS: Add he.po.
+
+2025-05-15         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* es.po: Updated.
+
+2025-04-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* 5.3.2: Release tar made.
+
+2025-03-25         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* es.po: Updated.
+	* LINGUAS: Add tr to the list, as the translation is
+	from 2022, which is relatively recent.
+
+2025-03-23         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* pt.po: Updated.
+
+2025-03-09         Yaron Shahrabani	 <sh.yaron@gmail.com>
+
+	* xhe.po: Continuing to update.
+
+2025-03-05         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* de.po, fr.po: Updated.
+
+2025-03-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* bg.po, ko.po, pl.po, ro.po, sv.po: Updated.
+	* it.po: Updated.
+
+2025-02-28         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* id.po: Updated.
+
+2025-02-24         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* id.po: Updated.
+
+2024-12-15         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* sr.po: Updated.
+
 2024-09-17         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.3.1: Release tar made.

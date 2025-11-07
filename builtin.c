@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 1986, 1988, 1989, 1991-2024,
+ * Copyright (C) 1986, 1988, 1989, 1991-2025,
  * the Free Software Foundation, Inc.
  *
  * This file is part of GAWK, the GNU implementation of the
@@ -559,6 +559,14 @@ do_isarray(int nargs)
 	check_exact_args(nargs, "isarray", 1);
 
 	tmp = POP();
+
+	if (tmp->type == Node_param_list) {
+		tmp = GET_PARAM(tmp->param_cnt);
+		if (tmp->type == Node_array_ref) {
+			tmp = tmp->orig_array;
+		}
+	}
+
 	if (tmp->type != Node_var_array) {
 		ret = 0;
 		// could be Node_var_new
@@ -579,16 +587,10 @@ do_length(int nargs)
 	check_exact_args(nargs, "length", 1);
 
 	tmp = POP();
-	if (tmp->type == Node_var_array) {
-		static bool warned = false;
-		unsigned long size;
 
-		if (do_posix)
-			fatal(_("length: received array argument"));
-   		if (do_lint_extensions && ! warned) {
-			warned = true;
-			lintwarn(_("`length(array)' is a gawk extension"));
-		}
+	// As of the 2024 POSIX standard, length(array) is standardized. Yay!
+	if (tmp->type == Node_var_array) {
+		unsigned long size;
 
 		/*
 		 * Support for deferred loading of array elements requires that
@@ -810,7 +812,7 @@ do_substr(int nargs)
 		 * way to do things.
 		 */
 		memset(& mbs, 0, sizeof(mbs));
-		emalloc(substr, char *, (length * gawk_mb_cur_max) + 1, "do_substr");
+		emalloc(substr, char *, (length * gawk_mb_cur_max) + 1);
 		wp = t1->wstptr + indx;
 		for (cp = substr; length > 0; length--) {
 			result = wcrtomb(cp, *wp, & mbs);
@@ -951,9 +953,9 @@ do_strftime(int nargs)
 			break;
 		bufsize *= 2;
 		if (bufp == buf)
-			emalloc(bufp, char *, bufsize, "do_strftime");
+			emalloc(bufp, char *, bufsize);
 		else
-			erealloc(bufp, char *, bufsize, "do_strftime");
+			erealloc(bufp, char *, bufsize);
 	}
 	ret = make_string(bufp, buflen);
 	if (bufp != buf)
@@ -1095,20 +1097,14 @@ do_system(int nargs)
 		 * divides the result by 256.  That normally gives the
 		 * exit status but gives a weird result for death-by-signal.
 		 * So we compromise as follows:
+		 *
+		 * 7/2025. BWK awk now does what we do to sanitize the
+		 * status.  I removed the MinGW code for do_traditional
+		 * since we no longer care about that option here.
 		 */
 		ret = status;
-		if (status != -1) {
-			if (do_posix)
-				;	/* leave it alone, full 16 bits */
-			else if (do_traditional)
-#ifdef __MINGW32__
-				ret = (((unsigned)status) & ~0xC0000000);
-#else
-				ret = (status / 256.0);
-#endif
-			else
-				ret = sanitize_exit_status(status);
-		}
+		if (status != -1 && ! do_posix)
+			ret = sanitize_exit_status(status);
 
 		if ((BINMODE & BINMODE_INPUT) != 0)
 			os_setbinmode(fileno(stdin), O_BINARY);
@@ -1554,12 +1550,12 @@ do_srand(int nargs)
 	check_args_min_max(nargs, "srand", 0, 1);
 
 	if (nargs == 0)
-		srandom((unsigned int) (save_seed = (long) time((time_t *) 0)));
+		srandom((unsigned int) (save_seed = (unsigned long) time((time_t *) 0)));
 	else {
 		tmp = POP_SCALAR();
 		if (do_lint && (fixtype(tmp)->flags & NUMBER) == 0)
 			lintwarn(_("%s: received non-numeric argument"), "srand");
-		srandom((unsigned int) (save_seed = (long) force_number(tmp)->numbr));
+		srandom((unsigned int) (save_seed = (unsigned long) force_number(tmp)->numbr));
 		DEREF(tmp);
 	}
 	return make_number((AWKNUM) ret);
@@ -1646,9 +1642,9 @@ do_match(int nargs)
 					amt = ilen + subseplen + strlen("length") + 1;
 
 					if (oldamt == 0) {
-						emalloc(buf, char *, amt, "do_match");
+						emalloc(buf, char *, amt);
 					} else if (amt > oldamt) {
-						erealloc(buf, char *, amt, "do_match");
+						erealloc(buf, char *, amt);
 					}
 					oldamt = amt;
 					memcpy(buf, buff, ilen);
@@ -1679,6 +1675,12 @@ do_match(int nargs)
 	}
 
 	DEREF(t1);
+	// Someone used $0 as the second parameter. We have to treat
+	// it with extra TLC.
+	if (tre->type == Node_dynregex
+	    && tre->re_exp->valref > 1
+	    && (tre->re_exp->flags & MALLOC) == 0)
+		unref(tre->re_exp);
 	unref(RSTART_node->var_value);
 	RSTART_node->var_value = make_number((AWKNUM) rstart);
 	unref(RLENGTH_node->var_value);
@@ -1901,7 +1903,7 @@ do_sub(int nargs, unsigned int flags)
 	 * for example.
 	 */
 	if (gawk_mb_cur_max > 1 && repllen > 0) {
-		emalloc(mb_indices, char *, repllen * sizeof(char), "do_sub");
+		emalloc(mb_indices, char *, repllen * sizeof(char));
 		index_multibyte_buffer(repl, mb_indices, repllen);
 	}
 
@@ -1954,7 +1956,7 @@ do_sub(int nargs, unsigned int flags)
 
 	/* guesstimate how much room to allocate; +1 forces > 0 */
 	buflen = textlen + (ampersands + 1) * repllen + 1;
-	emalloc(buf, char *, buflen + 1, "do_sub");
+	emalloc(buf, char *, buflen + 1);
 	buf[buflen] = '\0';
 
 	bp = buf;
@@ -1981,7 +1983,7 @@ do_sub(int nargs, unsigned int flags)
 		sofar = bp - buf;
 		while (buflen < (sofar + len + 1)) {
 			buflen *= 2;
-			erealloc(buf, char *, buflen, "sub_common");
+			erealloc(buf, char *, buflen);
 			bp = buf + sofar;
 		}
 		for (scan = text; scan < matchstart; scan++)
@@ -2114,7 +2116,7 @@ do_sub(int nargs, unsigned int flags)
 	sofar = bp - buf;
 	if (buflen < (sofar + textlen + 1)) {
 		buflen = sofar + textlen + 1;
-		erealloc(buf, char *, buflen, "do_sub");
+		erealloc(buf, char *, buflen);
 		bp = buf + sofar;
 	}
 	/*
@@ -2170,20 +2172,8 @@ done:
 		 * remain a regexp. In that case, we have to update the compiled
 		 * regular expression that it holds.
 		 */
-		bool is_regex = false;
-		NODE *target = *lhs;
+		bool is_regex = ((target->flags & REGEX) != 0);
 
-		if ((target->flags & REGEX) != 0) {
-			is_regex = true;
-
-			if (target->valref == 1) {
-				// free old regex registers
-				refree(target->typed_re->re_reg[0]);
-				if (target->typed_re->re_reg[1] != NULL)
-					refree(target->typed_re->re_reg[1]);
-				freenode(target->typed_re);
-			}
-		}
 		unref(*lhs);		// nuke original value
 		if (is_regex)
 			*lhs = make_typed_regex(buf, textlen);
@@ -2204,9 +2194,13 @@ call_sub(const char *name, int nargs)
 	NODE **lhs, *rhs;
 	NODE *zero = make_number(0.0);
 	NODE *result;
+	const char *fname = name;
 
-	if (name[0] == 'g') {
-		if (name[1] == 'e')
+	if (fname[0] == 'a')	// awk::...
+		fname += 5;
+
+	if (fname[0] == 'g') {
+		if (fname[1] == 'e')
 			flags = GENSUB;
 		else
 			flags = GSUB;
@@ -2307,17 +2301,33 @@ call_match(int nargs)
 	if (nargs == 3)
 		array = POP();
 	regex = POP();
-
-	/* Don't need to pop the string just to push it back ... */
+	text = POP();
 
 	bool need_free = false;
 	if ((regex->flags & REGEX) != 0)
 		regex = regex->typed_re;
-	else {
+	else if (regex->type == Node_var_new || regex->type == Node_elem_new) {
+		if (regex->type == Node_elem_new)
+			elem_new_reset(regex);
+		else if (regex->vname != NULL)
+			efree(regex->vname);
+		memset(regex, 0, sizeof(*regex));
+		regex->type = Node_dynregex;
+		regex->re_exp = dupnode(Nnull_string);
+	} else {
 		regex = make_regnode(Node_regex, regex);
 		need_free = true;
 	}
 
+	if (text->type == Node_var_new || text->type == Node_elem_new) {
+		if (text->type == Node_elem_new)
+			elem_new_reset(text);
+		else if (text->vname != NULL)
+			efree(text->vname);
+		text = dupnode(Nnull_string);
+	}
+
+	PUSH(text);
 	PUSH(regex);
 
 	if (array)
@@ -2342,11 +2352,15 @@ call_split_func(const char *name, int nargs)
 {
 	NODE *regex, *seps;
 	NODE *result;
+	const char *fname = name;
 
 	regex = seps = NULL;
 	if (nargs < 2 || nargs > 4)
 		fatal(_("indirect call to %s requires two to four arguments"),
 				name);
+
+	if (fname[0] == 'a')	// awk::...
+		fname += 5;
 
 	if (nargs == 4)
 		seps = POP();
@@ -2361,7 +2375,7 @@ call_split_func(const char *name, int nargs)
 			need_free = true;
 		}
 	} else {
-		if (name[0] == 's') {
+		if (fname[0] == 's') {
 			regex = make_regnode(Node_regex, FS_node->var_value);
 			regex->re_flags |= FS_DFLT;
 		} else
@@ -2378,7 +2392,7 @@ call_split_func(const char *name, int nargs)
 	if (seps)
 		PUSH(seps);
 
-	result = (name[0] == 's') ? do_split(nargs) : do_patsplit(nargs);
+	result = (fname[0] == 's') ? do_split(nargs) : do_patsplit(nargs);
 
 	if (need_free) {
 		refree(regex->re_reg[0]);
@@ -2424,20 +2438,25 @@ do_lshift(int nargs)
 	if (val < 0 || shift < 0)
 		fatal(_("lshift(%f, %f): negative values are not allowed"), val, shift);
 
-	if (do_lint) {
-		if (double_to_int(val) != val || double_to_int(shift) != shift)
-			lintwarn(_("lshift(%f, %f): fractional values will be truncated"), val, shift);
-		if (shift >= sizeof(uintmax_t) * CHAR_BIT)
-			lintwarn(_("lshift(%f, %f): too large shift value will give strange results"), val, shift);
+	if (do_lint && (double_to_int(val) != val || double_to_int(shift) != shift))
+		lintwarn(_("lshift(%f, %f): fractional values will be truncated"), val, shift);
+
+	if (shift < sizeof(uintmax_t) * CHAR_BIT) {
+		// within range
+		uval = (uintmax_t) val;
+		ushift = (uintmax_t) shift;
+
+		res = uval << ushift;
+	} else {
+		// out of range
+		if (do_lint)
+			lintwarn(_("lshift(%f, %f): too large shift value returns zero"), val, shift);
+		res = 0;
 	}
 
 	DEREF(s1);
 	DEREF(s2);
 
-	uval = (uintmax_t) val;
-	ushift = (uintmax_t) shift;
-
-	res = uval << ushift;
 	return make_integer(res);
 }
 
@@ -2465,20 +2484,25 @@ do_rshift(int nargs)
 	if (val < 0 || shift < 0)
 		fatal(_("rshift(%f, %f): negative values are not allowed"), val, shift);
 
-	if (do_lint) {
-		if (double_to_int(val) != val || double_to_int(shift) != shift)
-			lintwarn(_("rshift(%f, %f): fractional values will be truncated"), val, shift);
-		if (shift >= sizeof(uintmax_t) * CHAR_BIT)
-			lintwarn(_("rshift(%f, %f): too large shift value will give strange results"), val, shift);
+	if (do_lint && (double_to_int(val) != val || double_to_int(shift) != shift))
+		lintwarn(_("rshift(%f, %f): fractional values will be truncated"), val, shift);
+
+	if (shift < sizeof(uintmax_t) * CHAR_BIT) {
+		// within range
+		uval = (uintmax_t) val;
+		ushift = (uintmax_t) shift;
+
+		res = uval >> ushift;
+	} else {
+		// out of range
+		if (do_lint)
+			lintwarn(_("rshift(%f, %f): too large shift value returns zero"), val, shift);
+		res = 0;
 	}
 
 	DEREF(s1);
 	DEREF(s2);
 
-	uval = (uintmax_t) val;
-	ushift = (uintmax_t) shift;
-
-	res = uval >> ushift;
 	return make_integer(res);
 }
 
@@ -2640,6 +2664,7 @@ nondec2awknum(char *str, size_t len, char **endptr)
 	char save;
 	short val;
 	char *start = str;
+	size_t savelen = len;
 
 	if (len >= 2 && *str == '0' && (str[1] == 'x' || str[1] == 'X')) {
 		/*
@@ -2682,6 +2707,12 @@ nondec2awknum(char *str, size_t len, char **endptr)
 			case 'F':
 				val = *str - 'A' + 10;
 				break;
+			case 'p':
+			case 'P':
+				// restore the string
+				str = start;
+				len = savelen;
+				goto floating_point_hex;
 			default:
 				if (endptr)
 					*endptr = str;
@@ -2711,6 +2742,7 @@ nondec2awknum(char *str, size_t len, char **endptr)
 			*endptr = str;
 	} else {
 decimal:
+floating_point_hex:
 		save = str[len];
 		str[len] = '\0';
 		retval = strtod(str, endptr);
@@ -3113,6 +3145,14 @@ do_typeof(int nargs)
 	else
 		dbg = NULL;
 	arg = POP();
+
+	if (arg->type == Node_param_list) {
+		arg = GET_PARAM(arg->param_cnt);
+		if (arg->type == Node_array_ref) {
+			arg = arg->orig_array;
+		}
+	}
+
 	switch (arg->type) {
 	case Node_var_array:
 		/* Node_var_array is never UPREF'ed */
@@ -3146,7 +3186,7 @@ do_typeof(int nargs)
 
 #define SETVAL(X, V) {	\
 	size_t l = nl + sizeof(#X);	\
-	emalloc(p, char *, l+1, "do_typeof");	\
+	emalloc(p, char *, l+1);	\
 	sprintf(p, "%s_" #X, nextfree[i].name);	\
 	assoc_set(dbg, make_str_node(p, l, ALREADY_MALLOCED), make_number((AWKNUM) (V)));	\
 }
@@ -3214,9 +3254,10 @@ do_typeof(int nargs)
 		}
 		break;
 	case Node_var_new:
+		deref = false;
+		// fall through
 	case Node_elem_new:
 		res = "untyped";
-		deref = false;
 		break;
 	case Node_array_ref:
 		/*
@@ -3301,6 +3342,13 @@ do_mkbool(int nargs)
 
 /* gawk_system --- specialized version for gawk */
 
+/*
+ * 7/2025: This got messier because we need to ignore SIGINT and SIGQUIT
+ * and block SIGCHLD while running (see the POSIX description of system()).
+ * Blocking is only possible with the POSIX sigaction/sigprocmask APIs.
+ * We do our best here, but it ain't pretty.
+ */
+
 int
 gawk_system(const char *command)
 {
@@ -3310,38 +3358,57 @@ gawk_system(const char *command)
 	pid_t childpid;
 	int status;
 
+	// In the parent, before the fork
+#ifdef HAVE_SIGPROCMASK
+	sigset_t set, oldset;
+
+	sigemptyset(& set);
+	sigaddset(& set, SIGCHLD);
+	sigprocmask(SIG_BLOCK, & set, & oldset);
+
+	struct sigaction action, old_int_action, old_quit_action;
+
+	sigemptyset(& action.sa_mask);
+	action.sa_flags = 0;
+	action.sa_handler = SIG_IGN;
+	sigaction(SIGINT, & action, & old_int_action);
+	sigaction(SIGQUIT, & action, & old_quit_action);
+#else
+	void (*istat)(int), (*qstat)(int);
+
+	istat = signal(SIGINT, SIG_IGN);
+	qstat = signal(SIGQUIT, SIG_IGN);
+#endif
+
 	if ((childpid = fork()) == 0) {
 		// child
 		set_sigpipe_to_default();
+		// in the child, restore defaults
+#ifdef HAVE_SIGPROCMASK
+		sigprocmask(SIG_SETMASK, & oldset, NULL);
+		sigaction(SIGINT, & old_int_action, NULL);
+		sigaction(SIGQUIT, & old_quit_action, NULL);
+#else
+		istat = signal(SIGINT, istat);
+		qstat = signal(SIGQUIT, qstat);
+#endif
 		execl("/bin/sh", "sh", "-c", command, NULL);
 		_exit(errno == ENOENT ? 127 : 126);
 	} else {
 		// parent
 		status = wait_any(childpid);
 
+		// in the parent, restore stuff after getting the status
+#ifdef HAVE_SIGPROCMASK
+		sigprocmask(SIG_SETMASK, & oldset, NULL);
+		sigaction(SIGINT, & old_int_action, NULL);
+		sigaction(SIGQUIT, & old_quit_action, NULL);
+#else
+		istat = signal(SIGINT, istat);
+		qstat = signal(SIGQUIT, qstat);
+#endif
+
 		return status;
 	}
-#endif /* defined(VMS) || defined(__MINGW32__) */
+#endif /* ! (defined(VMS) || defined(__MINGW32__)) */
 }
-
-#if 0
-// test program
-
-int main(int argc, char **argv)
-{
-	struct lconv *l;
-
-	setlocale(LC_ALL, "");
-	l = localeconv();
-
-	const char *new = add_thousands("12345678901234567890.54321", l);
-	printf("%s\n", new);
-	free((void*) new);
-
-	new = add_thousands("12345678901234567890", l);
-	printf("%s\n", new);
-	free((void*) new);
-
-	return 0;
-}
-#endif

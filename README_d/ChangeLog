@@ -1,3 +1,24 @@
+2025-10-11         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* README.macosx: Updated.
+
+2025-07-06         Eli Zaretskii  <eliz@gnu.org>
+
+	* README.pc: Add note about __USE_MINGW_ANSI_STDIO.
+
+2025-04-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* 5.3.2: Release tar made.
+
+2025-02-23         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* README.mpfr, README.pc: Small fixes.
+
+2025-02-17         John E. Malmberg      <wb8tyw@qsl.net>
+
+	* README.VMS: Updated for VSI 9.2 on x86_64.  Removed some VAX
+	details since VAX/VMS is no longer supported.
+
 2024-09-17         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.3.1: Release tar made.

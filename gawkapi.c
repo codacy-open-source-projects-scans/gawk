@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright (C) 2012-2019, 2021, 2022, 2023, 2024,
+ * Copyright (C) 2012-2019, 2021-2025,
  * the Free Software Foundation, Inc.
  *
  * This file is part of GAWK, the GNU implementation of the
@@ -433,7 +433,7 @@ api_awk_atexit(awk_ext_id_t id,
 		return;
 
 	/* allocate memory */
-	emalloc(p, struct ext_exit_handler *, sizeof(struct ext_exit_handler), "api_awk_atexit");
+	emalloc(p, struct ext_exit_handler *, sizeof(struct ext_exit_handler));
 
 	/* fill it in */
 	p->funcp = funcp;
@@ -481,9 +481,9 @@ assign_string(NODE *node, awk_value_t *val, awk_valtype_t val_type)
 				scopy.size = 8;	/* initial size */
 			else
 				scopy.size *= 2;
-			erealloc(scopy.strings, char **, scopy.size * sizeof(char *), "assign_string");
+			erealloc(scopy.strings, char **, scopy.size * sizeof(char *));
 		}
-		emalloc(s, char *, node->stlen + 1, "assign_string");
+		emalloc(s, char *, node->stlen + 1);
 		memcpy(s, node->stptr, node->stlen);
 		s[node->stlen] = '\0';
 		val->str_value.str = scopy.strings[scopy.i++] = s;
@@ -910,9 +910,12 @@ api_sym_update(awk_ext_id_t id,
 		unref(node->var_value);
 		node->var_value = awk_value_to_node(value);
 		if ((node->type == Node_var_new || node->type == Node_elem_new)
-		    && value->val_type != AWK_UNDEFINED)
+		    && value->val_type != AWK_UNDEFINED) {
+			if (node->type == Node_elem_new) {
+				elem_new_reset(node);
+			}
 			node->type = Node_var;
-
+		}
 		return awk_true;
 	}
 
@@ -1101,8 +1104,9 @@ api_set_array_element(awk_ext_id_t id, awk_array_t a_cookie,
 	elem = awk_value_to_node(value);
 	if (elem->type == Node_var_array) {
 		elem->parent_array = array;
-		elem->vname = estrdup(index->str_value.str,
-					index->str_value.len);
+		// array indices are strings, ensure that this is the case
+		(void) force_string(tmp);
+		elem->vname = estrdup(tmp->stptr, tmp->stlen);
 	}
 	assoc_set(array, tmp, elem);
 
@@ -1248,8 +1252,7 @@ api_flatten_array_typed(awk_ext_id_t id,
 	alloc_size = sizeof(awk_flat_array_t) +
 			(array->table_size - 1) * sizeof(awk_element_t);
 
-	ezalloc(*data, awk_flat_array_t *, alloc_size,
-			"api_flatten_array_typed");
+	ezalloc(*data, awk_flat_array_t *, alloc_size);
 
 	list = assoc_list(array, "@unsorted", ASORTI);
 
@@ -1363,7 +1366,7 @@ api_get_mpfr(awk_ext_id_t id)
 {
 #ifdef HAVE_MPFR
 	mpfr_ptr p;
-	emalloc(p, mpfr_ptr, sizeof(mpfr_t), "api_get_mpfr");
+	emalloc(p, mpfr_ptr, sizeof(mpfr_t));
 	mpfr_init(p);
 	return p;
 #else
@@ -1379,7 +1382,7 @@ api_get_mpz(awk_ext_id_t id)
 {
 #ifdef HAVE_MPFR
 	mpz_ptr p;
-	emalloc(p, mpz_ptr, sizeof (mpz_t), "api_get_mpz");
+	emalloc(p, mpz_ptr, sizeof (mpz_t));
 
 	mpz_init(p);
 	return p;
@@ -1505,7 +1508,7 @@ api_register_ext_version(awk_ext_id_t id, const char *version)
 
 	(void) id;
 
-	emalloc(info, struct version_info *, sizeof(struct version_info), "register_ext_version");
+	emalloc(info, struct version_info *, sizeof(struct version_info));
 	info->version = version;
 	info->next = vi_head;
 	vi_head = info;
@@ -1665,7 +1668,7 @@ ns_lookup(const char *name_space, const char *name, char **fullname)
 
 	size_t len = strlen(name_space) + 2 + strlen(name) + 1;
 	char *buf;
-	emalloc(buf, char *, len, "ns_lookup");
+	emalloc(buf, char *, len);
 	sprintf(buf, "%s::%s", name_space, name);
 
 	NODE *f = lookup(buf);

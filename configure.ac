@@ -1,7 +1,7 @@
 dnl
 dnl configure.ac --- autoconf input file for gawk
 dnl
-dnl Copyright (C) 1995-2024 the Free Software Foundation, Inc.
+dnl Copyright (C) 1995-2025 the Free Software Foundation, Inc.
 dnl
 dnl This file is part of GAWK, the GNU implementation of the
 dnl AWK Programming Language.
@@ -146,7 +146,6 @@ then
 	AC_MSG_RESULT([yes])
 else
 	AC_MSG_RESULT([no])
-	CFLAGS="$CFLAGS -DNDEBUG"	# turn off assertions
 fi
 
 AC_SUBST(CFLAGS)
@@ -187,8 +186,9 @@ gt_LC_MESSAGES
 dnl checks for header files
 AC_CHECK_HEADERS(arpa/inet.h fcntl.h locale.h libintl.h mcheck.h \
 	netdb.h netinet/in.h stddef.h string.h \
-	sys/ioctl.h sys/param.h sys/select.h sys/socket.h sys/time.h unistd.h \
-	termios.h stropts.h wchar.h wctype.h)
+	spawn.h \
+	sys/ioctl.h sys/param.h sys/personality.h sys/select.h sys/socket.h sys/time.h \
+	unistd.h termios.h stropts.h wchar.h wctype.h)
 
 gl_C_BOOL
 AC_HEADER_SYS_WAIT
@@ -317,7 +317,8 @@ AC_CHECK_FUNCS(__etoa_l atexit btowc fmod fwrite_unlocked gai_strerror \
 	gettimeofday clock_gettime lstat \
 	getdtablesize \
 	mbrlen memcmp memcpy memmove memset \
-	mkstemp mtrace posix_openpt setenv setlocale setsid sigprocmask \
+	_NSGetExecutablePath posix_spawnp \
+	mkstemp mtrace personality posix_openpt setenv setlocale setsid sigprocmask \
 	snprintf strcasecmp strchr strcoll strerror strftime strncasecmp \
 	strsignal strtod strtoul system timegm tmpfile towlower towupper \
 	tzset usleep waitpid wcrtomb wcscoll wctype)
@@ -509,9 +510,26 @@ w
 EOF
 		done
 	fi
-	for i in . support
+	for i in . support extension
 	do
-		sed -e '/-O2/s///' -e '/^CFLAGS = /s//&${DEBUG} /' $i/Makefile > foo
-		mv foo $i/Makefile
+		# Use test -f in case --disable-extensions was used,
+		# in which case there won't be a Makefile in the extension
+		# directory.  This fixes a bug report.
+		if test -f $i/Makefile
+		then
+			sed -e '/-O2/s///' -e '/^CFLAGS = /s//&${DEBUG} /' $i/Makefile > foo
+			mv foo $i/Makefile
+		fi
+	done
+elif test "$GCC" = yes
+then
+	for i in . support extension
+	do
+		# Same thing here.
+		if test -f $i/Makefile
+		then
+			sed -e '/-O2/s//-O3/g'  $i/Makefile > foo
+			mv foo $i/Makefile
+		fi
 	done
 fi

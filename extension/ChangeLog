@@ -1,3 +1,43 @@
+2025-10-19         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* configure.ac: Don't disable assertions anymore. They provide
+	value, and on modern systems don't affect perormance.
+
+2025-07-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* ordchr.c (do_ord): Revise to work like gawk does, returning 0xFFFD
+	for bad multibyte conversions.
+
+2025-06-29         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* ordchr.c (do_ord, do_chr): Revise to do multibyte / wide character
+	conversions.  It's a Unicode world these days.
+	Bumped the version to 2.0.
+	* ordchr.3am: Updated.
+
+2025-04-03         Eli Zaretskii  <eliz@gnu.org>
+
+	* time.c (init_time): New function.  On MS-Windows, attempts to
+	dynamically load GetSystemTimePreciseAsFileTime, which provides
+	more accurate time, as opposed to GetSystemTimeAsFileTime whose
+	precision is the basic 64Hz Windows clock.
+	(do_gettimeofday) [HAVE_GETSYSTEMTIMEASFILETIME]: Use
+	GetSystemTimePreciseAsFileTime if available.
+
+2025-04-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* 5.3.2: Release tar made.
+
+2025-03-09         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* inplace.c (do_inplace_begin): Additional hoop jumping to
+	silence clang warnings. Sheesh.
+
+2024-11-13         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* time.3am: Fix spelling of "strptime()". Thanks to
+	James Ghofulpo <james@ghofulpo.com> for the report.
+
 2024-09-17         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.3.1: Release tar made.
