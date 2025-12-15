@@ -1,3 +1,53 @@
+2025-12-12         Eli Zaretskii  <eliz@gnu.org>
+
+	* awk.h: Add declaration for timegm if HAVE_TIMEGM not defined.
+	Needed for MinGW.
+	* io.c (wait_any_block_signals): Add ifdefs as needed for MinGW.
+	(file_can_timeout): Ditto.
+
+2025-12-12         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* builtin.c (do_dump_node): Add an additional ifdef for MPFR.
+
+2025-12-11         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* debug.c (CHECK_PROG_RUNNING): Add file, line number and function
+	names to error message.
+	(serialize_list): Move history related variables and code into
+	#ifdefs so that things compile without readline.
+
+2025-12-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Add a function to dump the NODE structure. Should have done
+	this ages ago.
+
+	* awk.h (do_dump_node): Declare the function.
+	* builtin.c (do_dump_node): New function.
+	* awkgram.y (tokentab): Add entry for _dump_node(). Note the "_".
+
+2025-12-09         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* mpfr.c (mpg_mod): Keep only comments relevant to compatibility.
+	And refer to the test.
+	* builtin.c (do_intdiv): Fix typos in a comment.
+	* mpfr.c (do_mpfr_intdiv): Ditto.
+	Thanks to Nethox <nethox+awk@gmail.com> for the patch.
+
+2025-12-06         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* awk.h: If using gettimeofday(), include <sys/time.h>.
+	This is helpful on old macOS, at least.
+
+2025-11-30         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Improve the timeout check to be made when the IOP is created
+	instead of on every record read.
+
+	* awk.h (IOBUF): Add a can_timeout member.
+	* io.c (get_a_record): Use it instead of calling file_can_timeout().
+	(file_can_timeout): Adjust to take fd and mode arguments.
+	(iop_alloc): Set the can_timeout member by calling file_can_timeout.
+
 2025-11-24         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* README: Updated some more.

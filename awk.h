@@ -61,6 +61,9 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <time.h>
+#if defined(HAVE_GETTIMEOFDAY)
+#include <sys/time.h>	// get the declaration
+#endif
 #include <errno.h>
 #if ! defined(errno)
 extern int errno;
@@ -153,6 +156,10 @@ typedef int off_t;
 #ifdef HAVE_FWRITE_UNLOCKED
 #define fwrite	fwrite_unlocked
 #endif /* HAVE_FWRITE_UNLOCKED */
+
+#ifndef HAVE_TIMEGM
+extern time_t timegm(struct tm *tm);
+#endif
 
 #if defined(__MINGW32__)
 #include "nonposix.h"
@@ -958,6 +965,7 @@ typedef struct iobuf {
 				   to regrow/refill */
 	bool valid;
 	int errcode;
+	bool can_timeout;	/* true if I/O can timeout */
 
 	enum iobuf_flags {
 		IOP_IS_TTY	= 1,
@@ -1528,6 +1536,7 @@ extern NODE *do_dcngettext(int nargs);
 extern NODE *do_bindtextdomain(int nargs);
 extern NODE *do_intdiv(int nargs);
 extern NODE *do_typeof(int nargs);
+extern NODE *do_dump_node(int nargs);
 extern int strncasecmpmbs(const unsigned char *,
 			  const unsigned char *, size_t);
 extern int sanitize_exit_status(int status);
