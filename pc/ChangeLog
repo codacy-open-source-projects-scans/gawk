@@ -1,3 +1,11 @@
+2025-12-17         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
+2025-12-16         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
 2025-12-15         Arnold D. Robbins     <arnold@skeeve.com>
 
 	Per discussion with Eli Zaretskii.
@@ -11,6 +19,10 @@
 	* Makefile: Remove protos.h and add minrx.c.
 
 2025-12-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
+2025-12-01         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* Makefile.tst: Regenerated.
 
@@ -43,6 +55,10 @@
 	* Makefile.tst: Regenerated.
 
 2025-07-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Makefile.tst: Regenerated.
+
+2025-04-06         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* Makefile.tst: Regenerated.
 

@@ -142,6 +142,7 @@ CLEANFILES = core core.* fmtspcl.ok
 
 # try to keep these sorted. each letter starts a new line
 BASIC_TESTS = \
+	regexpuparrow shortest-match \
 	addcomma anchgsub anchor argarray argcasfile arrayind1 arrayind2 \
 	arrayind3 arrayparm arrayprm2 arrayprm3 arrayref arrymem1 \
 	arryref2 arryref3 arryref4 arryref5 arynasty arynocls aryprm1 \
@@ -198,6 +199,7 @@ UNIX_TESTS = \
 	space strftlng
 
 GAWK_EXT_TESTS = \
+	equiv \
 	aadelete1 aadelete2 aarray1 aasort aasorti ar2fn_elnew_sc \
 	ar2fn_elnew_sc2 ar2fn_fmod ar2fn_unxptyp_aref ar2fn_unxptyp_val \
 	argtest arraysort arraysort2 arraytype asortbool asortsymtab \
@@ -362,13 +364,13 @@ EXPECTED_FAIL_MINGW = \
 EXPECTED_FAIL_ZOS = \
 	aasort aasorti arraysort asort asorti backbigs1 backsmalls1 \
 	backsmalls2 beginfile1 beginfile2 charasbytes clos1way6 \
-	cmdlinefsbacknl2 cmdlinefsbacknl2 commas concat4 dbugarray4 \
+	cmdlinefsbacknl2 commas concat4 dbugarray4 \
 	dfamb1 double1 double2 elemnew4 errno fmttest forcenum getlndir \
 	gsubnulli18n gsubtst5 ignrcas2 inf-nan-torture iolint lc_num1 \
 	mbfw1 mbprintf1 mbprintf2 mbprintf3 mbprintf4 mbprintf5 \
 	mbstr1 mbstr2 mtchi18n mtchi18n2 nlstringtest nofile nonfatal2 \
-	numrange posix_compare printf-corners printhuge profile5 rebt8b2 \
-	regexpbad regrange reint2 rri1 sigpipe1 sort1 sortfor sortu \
+	numrange posix_compare printf-corners printhuge profile5 randtest \
+	rebt8b2 regexpbad regrange reint2 rri1 sigpipe1 sort1 sortfor sortu \
 	space sprintfc subamp subi18n symtab1 symtab11 symtab8 timeout \
 	unicode1 wideidx wideidx2 widesub widesub2 widesub3 widesub4
 
@@ -1340,6 +1342,16 @@ indirectbuiltin2:
 	@-$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
 Gt-dummy:
 # file Maketests, generated from Makefile.am by the Gentests program
+regexpuparrow:
+	@echo $@
+	@-AWKPATH="$(srcdir)" $(AWK) -f $@.awk  < "$(srcdir)"/$@.in >_$@ 2>&1 || echo EXIT CODE: $$? >>_$@
+	@-$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
+
+shortest-match:
+	@echo $@
+	@-AWKPATH="$(srcdir)" $(AWK) -f $@.awk  >_$@ 2>&1 || echo EXIT CODE: $$? >>_$@
+	@-$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
+
 addcomma:
 	@echo $@
 	@-AWKPATH="$(srcdir)" $(AWK) -f $@.awk  < "$(srcdir)"/$@.in >_$@ 2>&1 || echo EXIT CODE: $$? >>_$@
@@ -2731,6 +2743,11 @@ rtlen:
 rtlen01:
 	@echo $@
 	@-$(LOCALES) AWK="$(AWKPROG) $(GAWK_TEST_ARGS)" "$(srcdir)"/$@.sh  > _$@ 2>&1 || echo EXIT CODE: $$? >>_$@
+	@-$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
+
+equiv:
+	@echo $@
+	@-AWKPATH="$(srcdir)" $(AWK) -f $@.awk  < "$(srcdir)"/$@.in >_$@ 2>&1 || echo EXIT CODE: $$? >>_$@
 	@-$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
 
 aadelete1:
