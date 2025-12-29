@@ -8632,7 +8632,7 @@ BEGIN @{
             gsub(/""/, "\"", $i)    # Convert "" to "
         @}
     @}
-    $1 = $1	# force rebuild of the record
+    $1 = $1    # force rebuild of the record
     print
 @}
 @end group
@@ -8643,12 +8643,13 @@ When run, it produces:
 
 @example
 $ @kbd{gawk -f quoted-csv.awk sample.csv}
-@print{} 1	2	3
-@print{} p	q,r	s
-@print{} p	q"r	s
-@print{} p	q,"r	s
-@print{} p		s
-@print{} p		s
+@print{} 1       2       3
+@print{} p       q,r     s
+@print{} p       q"r     s
+@print{} p       q,"r    s
+@print{} p               s
+@print{} p               s
+
 @end example
 
 Some programs export CSV data that contain @emph{embedded newlines} between
@@ -11770,6 +11771,26 @@ $ @kbd{gawk 'BEGIN @{ print "021 is", 021 ; print 018 @}'}
 @print{} 021 is 17
 @print{} 18
 @end example
+
+Hexadecimal integer constants have been part of the C language
+since the beginning.  The C99 standard added support for
+hexadecimal floating-point values.  This is
+a floating point number of the form
+[@code{-}]@code{0x@var{h}}[@code{.@var{hhhh}}]@code{p+-@var{dd}}.
+The @samp{p} introduces the exponent, and is @emph{required}.
+The radix point and following digits are optional.
+As with integer hexadecimal constants, both @samp{0x} and @samp{0X}
+may be used, and case in the letters @samp{a} through @samp{f}
+does not matter.
+
+Beginning with version 5.4.0, @command{gawk} supports hexadecimal
+floating point values, as constants in @command{awk} program source
+code, with the @code{strtonum()} built-in function, and with the
+@option{--non-decimal-data} command-line option.
+
+For this to work correctly, the version of @code{strtod()} in the
+system's underlying C library must understand such constants.
+On modern systems this isn't a problem.
 
 @cindex compatibility mode (@command{gawk}) @subentry octal numbers
 @cindex compatibility mode (@command{gawk}) @subentry hexadecimal numbers
@@ -35216,32 +35237,32 @@ they handle NaN and infinity values.
 
 function eq(left, right)
 @{
-        return left == right
+	return left == right
 @}
 
 function ne(left, right)
 @{
-        return left != right
+	return left != right
 @}
 
 function lt(left, right)
 @{
-        return left <  right
+	return left <  right
 @}
 
 function le(left, right)
 @{
-        return left <= right
+	return left <= right
 @}
 
 function gt(left, right)
 @{
-        return left >  right
+	return left >  right
 @}
 
 function ge(left, right)
 @{
-        return left >= right
+	return left >= right
 @}
 
 BEGIN @{
@@ -42612,6 +42633,10 @@ Version 5.4 added the following features:
 @itemize
 
 @item
+The @option{--enable-O3} option to @command{configure} was added
+(@pxref{Additional Configuration Options}).
+
+@item
 Use of the new MinRX regular expression matcher as the default
 matching engine
 (@pxref{Choosing Matchers}).
@@ -42638,8 +42663,9 @@ Persistent memory was enabled on NetBSD and OpenBSD
 (@pxref{Persistent Memory}).
 
 @item
-Hexadecimal floating-point values may be used with the @code{strtonum()}
-function and with the @option{--non-decimal-data} option
+Hexadecimal floating-point values may be used in program source
+code, with the @code{strtonum()}
+function, and with the @option{--non-decimal-data} option
 (@pxref{Nondecimal Data}).
 
 @item
@@ -43639,7 +43665,6 @@ Add the argument to the end of the @env{AWKLIBPATH} environment variable.
 
 @end table
 
-
 @node Additional Configuration Options
 @appendixsubsec Additional Configuration Options
 @cindex @command{gawk} @subentry configuring @subentry options
@@ -43698,6 +43723,22 @@ MPFR support is not available.
 Disable all message-translation facilities.
 This is usually not desirable, but it may bring you some slight performance
 improvement.
+
+@cindex @option{--enable-builtin-intdiv0} configuration option
+@cindex configuration option @subentry @option{--enable-builtin-intdiv0}
+@item --enable-builtin-intdiv0
+Add a new built-in function, @code{intdiv0()}, which generates
+integer division and remainder results at the same time. This
+is discussed more in @ref{Arbitrary Precision Integers}.
+
+@cindex @option{--enable-O3} configuration option
+@cindex configuration option @subentry @option{--enable-O3}
+@item --enable-O3
+Use the GCC option @option{-O3} when compiling @command{gawk}
+instead of the standard @option{-O2}.  The additional optimizations
+may improve @command{gawk}'s performance. However, in other projects,
+@option{-O3} has been known to cause bugs, thus its use is not
+the default.
 
 @cindex @option{--enable-versioned-extension-dir} configuration option
 @cindex configuration option @subentry @option{--enable-versioned-extension-dir}
