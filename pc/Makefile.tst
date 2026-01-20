@@ -369,7 +369,7 @@ NEED_LOCALE_RU = mtchi18n
 
 # List of tests that fail on MinGW
 EXPECTED_FAIL_MINGW = \
-	clos1way6 close_status debugeval4 \
+	clos1way6 close_status dbugeval4 \
 	devfd devfd1 devfd2 errno exitval2 fork fork2 fts functab5 \
 	getfile getlnhd inetdayt inetecht \
 	inf-nan-torture iolint \
@@ -402,7 +402,7 @@ GENTESTS_UNUSED = Makefile.in checknegtime.awk dtdgport.awk fix-fmtspcl.awk \
 
 # List of tests on MinGW that need a different cmp program
 NEED_TESTOUTCMP = \
-	beginfile2 double2 exit fmttest hsprint posix profile5 space printf-corners
+	beginfile2 double2 exit fmttest hsprint posix profile5 space printf-corners hexfloat
 
 
 
@@ -430,7 +430,7 @@ gawk-extensions: $(GAWK_EXT_TESTS)
 
 charset-tests-all:
 	@-case `uname` in \
-	*MINGW* | *MS-DOS*) \
+	*MINGW*) \
 		$(MAKE) charset-msg-start charset-tests charset-msg-end ;; \
 	*) \
 		if locale -a | grep -i 'en_US.UTF.*8' > /dev/null && \
@@ -856,13 +856,9 @@ mixed1::
 
 mbprintf5::
 	@echo $@; $(CHCP) $(ORIGCP) $(ZOS_FAIL)
-	@-case `uname` in \
-	CYGWIN* | MSYS* | MINGW32* | *MS-DOS*) echo this test fails on this system --- skipping $@ ;; \
-	*) \
-	[ -z "$$GAWKLOCALE" ] && GAWKLOCALE=ENU_USA; export GAWKLOCALE ; $(CHCP) 65001; \
+	@-[ -z "$$GAWKLOCALE" ] && GAWKLOCALE=ENU_USA; export GAWKLOCALE ; $(CHCP) 65001; \
 	$(AWK) -f "$(srcdir)"/$@.awk "$(srcdir)"/$@.in >_$@ 2>&1 || echo EXIT CODE: $$? >> _$@ ; \
-	$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@ ; \
-	esac
+	$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
 
 printfbad2: printfbad2.ok
 	@echo $@; $(CHCP) $(ORIGCP)
@@ -2770,7 +2766,7 @@ equiv:
 hexfloat:
 	@echo $@; $(CHCP) $(ORIGCP) $(ZOS_FAIL)
 	@-AWKPATH="$(srcdir)" $(AWK) -f $@.awk  >_$@ 2>&1 || echo EXIT CODE: $$? >>_$@
-	@-$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
+	@-$(TESTOUTCMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
 
 aadelete1:
 	@echo $@; $(CHCP) $(ORIGCP)
@@ -2945,6 +2941,7 @@ dbugeval3:
 
 dbugeval4:
 	@echo $@; $(CHCP) $(ORIGCP)
+	@echo Expect $@ to fail with MinGW.
 	@-AWKPATH="$(srcdir)" $(AWK) -f $@.awk  --debug < "$(srcdir)"/$@.in >_$@ 2>&1 || echo EXIT CODE: $$? >>_$@
 	@-$(CMP) "$(srcdir)"/$@.ok _$@ && rm -f _$@
 

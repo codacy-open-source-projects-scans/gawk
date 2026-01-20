@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023, 2024, 2025, Arnold David Robbins.
+ * Copyright (C) 2023, 2024, 2025, 2026, Arnold David Robbins.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -9033,8 +9033,8 @@ charset_invert(charset_t *set, int *errcode)
 		low = set->items[i].end + 1;
 	}
 	if (low <= MAX_CODE_POINT) {
-			if ((ret = charset_add_range(newset, low, MAX_CODE_POINT)) != CSET_SUCCESS)
-				goto fail;
+		if ((ret = charset_add_range(newset, low, MAX_CODE_POINT)) != CSET_SUCCESS)
+			goto fail;
 	}
 
 done:
@@ -9453,9 +9453,9 @@ charset_dump(const charset_t *set, FILE *fp, bool use_c_format)
 		fprintf(fp, "finalized = %s\n", boolval[!! set->finalized]);
 		fprintf(fp, "is_utf8 = %s\n", boolval[!! set->is_utf8]);
 		fprintf(fp, "mb_cur_max = %d\n", set->mb_cur_max);
-		fprintf(fp, "nchars_inuse = %zd\n", set->nchars_inuse);
-		fprintf(fp, "nelems = %zd\n", set->nelems);
-		fprintf(fp, "nelems8bit = %zd\n", set->nelems8bit);
+		fprintf(fp, "nchars_inuse = %zu\n", set->nchars_inuse);
+		fprintf(fp, "nelems = %zu\n", set->nelems);
+		fprintf(fp, "nelems8bit = %zu\n", set->nelems8bit);
 		
 		for (size_t i = 0; i < set->nelems; i++) {
 			fprintf(fp, "%3zd. RANGE: start = L'%lc' (%d), end = L'%lc' (%d)\n",
