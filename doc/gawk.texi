@@ -1996,7 +1996,6 @@ stage of development.
 
 @cindex Linux @seeentry{GNU/Linux}
 @cindex GNU/Linux
-@cindex operating systems @subentry BSD-based
 Until the GNU operating system is more fully developed, you should
 consider using GNU/Linux, a freely distributable, Unix-like operating
 system for Intel,
@@ -31314,8 +31313,9 @@ If you see the @samp{PMA} with a version indicator, then it's supported.
 As of this writing, persistent memory has only been tested on GNU/Linux,
 @c sort this list
 Cygwin,
-FreeBSD 16,
+FreeBSD 12--16,
 macOS,
+MidnightBSD 3 and 4,
 NetBSD 10 and 11,
 OpenBSD 7,
 and
@@ -42665,7 +42665,7 @@ an extension, as it became part of POSIX in 2004
 (@pxref{String Functions}).
 
 @item
-Persistent memory was enabled on FreeBSD, NetBSD and OpenBSD
+Persistent memory was enabled on FreeBSD, MidnightBSD, NetBSD and OpenBSD
 (@pxref{Persistent Memory}).
 
 @item
