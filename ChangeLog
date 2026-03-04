@@ -1,3 +1,23 @@
+2026-03-02         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* Checklist: Revisions.
+
+2026-03-01         Weixie Cui		 <cuiweixie@gmail.com>
+
+	* array.c (make_aname): Use sizeof(char) instead of
+	sizeof(char *) when allocating memory for the aname
+	string buffer. The buffer holds characters, not
+	pointers, so the previous sizeof(char *) caused
+	over-allocation.
+
+2026-02-27         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* buitin.c (do_sub): Pass searchflags to research in
+	loop over the whole line so that gensub()'s global works
+	with \N construct. Thanks to Koichi Murase <myoga.murase@gmail.com>
+	and Finn Steffens <finn.steffens@protonmail.com> for
+	reporting the bug.
+
 2026-02-22         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* 5.4.0: Release tar ball made.
